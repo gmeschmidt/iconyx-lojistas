@@ -164,22 +164,22 @@
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, .4); --shadow-md: 0 6px 16px rgba(0, 0, 0, .4); --shadow-lg: 0 16px 40px rgba(0, 0, 0, .5);
     color-scheme: dark;
   }
-  /* Paleta grená (ex.: Fluminense, #8c2a3d). */
+  /* Paleta grená (ex.: Fluminense, #5a0007). */
   :root[data-paleta="grena"] {
-    --navy-950: #3a0f19; --navy-900: #4f1522; --navy-800: #651b2c; --navy-500: #b0566a;
+    --navy-950: #2b0003; --navy-900: #3a0005; --navy-800: #4a0006; --navy-500: #a0404a;
     --bg: #f8f5f5; --surface: #ffffff; --sunken: #f0e9ea; --line: #e3d6d8; --line-strong: #cbb5b9;
     --fg: #2a0c13; --fg-2: #5c4448; --muted: #7a6266;
-    --brand: #8c2a3d; --brand-2: #a03249; --on-brand-muted: #ecc9d0;
-    --chip-on-bg: #8c2a3d; --chip-on-fg: #ffffff; --ok: #00714b; --note-bg: #fff6e3; --note-line: #f5a623;
-    --focus: 0 0 0 3px rgba(140, 42, 61, .35);
-    --shadow-sm: 0 1px 3px rgba(58, 15, 25, .08); --shadow-md: 0 6px 16px rgba(58, 15, 25, .10); --shadow-lg: 0 16px 40px rgba(58, 15, 25, .2);
+    --brand: #5a0007; --brand-2: #6e0a12; --on-brand-muted: #ecc9d0;
+    --chip-on-bg: #5a0007; --chip-on-fg: #ffffff; --ok: #00714b; --note-bg: #fff6e3; --note-line: #f5a623;
+    --focus: 0 0 0 3px rgba(90, 0, 7, .35);
+    --shadow-sm: 0 1px 3px rgba(43, 0, 3, .08); --shadow-md: 0 6px 16px rgba(43, 0, 3, .10); --shadow-lg: 0 16px 40px rgba(43, 0, 3, .2);
   }
   @media (prefers-color-scheme: dark) {
     :root[data-paleta="grena"]:not([data-theme="light"]) {
-    --navy-950: #3a0f19; --navy-900: #4f1522; --navy-800: #651b2c; --navy-500: #b0566a;
+    --navy-950: #2b0003; --navy-900: #3a0005; --navy-800: #4a0006; --navy-500: #a0404a;
     --bg: #160709; --surface: #241013; --sunken: #1c0b0e; --line: #3d1f25; --line-strong: #5a2f37;
     --fg: #f8eef0; --fg-2: #dcc6ca; --muted: #a8898f;
-    --brand: #5e1a28; --brand-2: #8c2a3d; --on-brand-muted: #ecc9d0;
+    --brand: #3f0005; --brand-2: #5a0007; --on-brand-muted: #ecc9d0;
     --chip-on-bg: #f5a623; --chip-on-fg: #2a0c13; --ok: #3fbf8a; --note-bg: #2a2412; --note-line: #c98a16;
     --focus: 0 0 0 3px rgba(255, 191, 77, .45);
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, .4); --shadow-md: 0 6px 16px rgba(0, 0, 0, .4); --shadow-lg: 0 16px 40px rgba(0, 0, 0, .5);
@@ -187,10 +187,10 @@
     }
   }
   :root[data-paleta="grena"][data-theme="dark"] {
-    --navy-950: #3a0f19; --navy-900: #4f1522; --navy-800: #651b2c; --navy-500: #b0566a;
+    --navy-950: #2b0003; --navy-900: #3a0005; --navy-800: #4a0006; --navy-500: #a0404a;
     --bg: #160709; --surface: #241013; --sunken: #1c0b0e; --line: #3d1f25; --line-strong: #5a2f37;
     --fg: #f8eef0; --fg-2: #dcc6ca; --muted: #a8898f;
-    --brand: #5e1a28; --brand-2: #8c2a3d; --on-brand-muted: #ecc9d0;
+    --brand: #3f0005; --brand-2: #5a0007; --on-brand-muted: #ecc9d0;
     --chip-on-bg: #f5a623; --chip-on-fg: #2a0c13; --ok: #3fbf8a; --note-bg: #2a2412; --note-line: #c98a16;
     --focus: 0 0 0 3px rgba(255, 191, 77, .45);
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, .4); --shadow-md: 0 6px 16px rgba(0, 0, 0, .4); --shadow-lg: 0 16px 40px rgba(0, 0, 0, .5);
@@ -680,7 +680,7 @@
       "<div>" + (c.escudo ? "" : swatch(c.cores, "stripe")) + "<h2>" + esc(c.nome) + "</h2>" +
       '<p class="meta"><b>' + prods.length + (prods.length === 1 ? " produto" : " produtos") + "</b> · " + res.length + (res.length === 1 ? " pasta de imagens" : " pastas de imagens") + "</p></div></div></div>";
     html += '<section class="sec" aria-labelledby="secRes"><div class="sec-head"><h3 id="secRes">Imagens e materiais</h3>' +
-      "<p>Arquivos oficiais do " + esc(c.nome) + " para baixar e usar na sua loja</p></div>" +
+      "<p>Arquivos oficiais da linha " + esc(c.nome) + " ICONYX para baixar e usar na sua loja</p></div>" +
       (res.length ? '<div class="res-list">' + res.map(resCard).join("") + "</div>"
                   : '<div class="empty">As imagens deste clube estão em preparação.</div>') + "</section>";
     html += '<section class="sec" aria-labelledby="secTxt"><div class="sec-head"><h3 id="secTxt">Descrições dos produtos</h3>' +
