@@ -68,6 +68,40 @@
     color-scheme: dark;
   }
 
+  /* Paleta sem azul: clubes que não aceitam a cor do rival (ex.: Atlético-MG). Ativada pelo campo "paleta": "preto". */
+  :root[data-paleta="preto"] {
+    --navy-950: #111111; --navy-900: #161616; --navy-800: #222222; --navy-500: #555555;
+    --bg: #f5f5f5; --surface: #ffffff; --sunken: #ededed; --line: #dcdcdc; --line-strong: #bdbdbd;
+    --fg: #111111; --fg-2: #4a4a4a; --muted: #6b6b6b;
+    --brand: #111111; --brand-2: #222222; --on-brand-muted: #bdbdbd;
+    --chip-on-bg: #111111; --chip-on-fg: #ffffff; --ok: #1c7a4a; --note-bg: #fff6e3; --note-line: #f5a623;
+    --focus: 0 0 0 3px rgba(0, 0, 0, .28);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, .08); --shadow-md: 0 6px 16px rgba(0, 0, 0, .10); --shadow-lg: 0 16px 40px rgba(0, 0, 0, .2);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root[data-paleta="preto"]:not([data-theme="light"]) {
+    --navy-950: #111111; --navy-900: #161616; --navy-800: #222222; --navy-500: #555555;
+    --bg: #0c0c0c; --surface: #171717; --sunken: #111111; --line: #2c2c2c; --line-strong: #444444;
+    --fg: #f2f2f2; --fg-2: #cfcfcf; --muted: #8f8f8f;
+    --brand: #000000; --brand-2: #161616; --on-brand-muted: #bdbdbd;
+    --chip-on-bg: #f5a623; --chip-on-fg: #111111; --ok: #4cc48a; --note-bg: #2a2412; --note-line: #c98a16;
+    --focus: 0 0 0 3px rgba(255, 191, 77, .45);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, .4); --shadow-md: 0 6px 16px rgba(0, 0, 0, .4); --shadow-lg: 0 16px 40px rgba(0, 0, 0, .5);
+    color-scheme: dark;
+    }
+  }
+  :root[data-paleta="preto"][data-theme="dark"] {
+    --navy-950: #111111; --navy-900: #161616; --navy-800: #222222; --navy-500: #555555;
+    --bg: #0c0c0c; --surface: #171717; --sunken: #111111; --line: #2c2c2c; --line-strong: #444444;
+    --fg: #f2f2f2; --fg-2: #cfcfcf; --muted: #8f8f8f;
+    --brand: #000000; --brand-2: #161616; --on-brand-muted: #bdbdbd;
+    --chip-on-bg: #f5a623; --chip-on-fg: #111111; --ok: #4cc48a; --note-bg: #2a2412; --note-line: #c98a16;
+    --focus: 0 0 0 3px rgba(255, 191, 77, .45);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, .4); --shadow-md: 0 6px 16px rgba(0, 0, 0, .4); --shadow-lg: 0 16px 40px rgba(0, 0, 0, .5);
+    color-scheme: dark;
+  }
+  body { transition: background-color .25s ease; }
+
   *, *::before, *::after { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
   body {
@@ -246,6 +280,8 @@
   .texts { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.55fr); gap: 16px; }
   .text { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
   .text-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .texts.single { grid-template-columns: minmax(0, 1fr); }
+  .texts.single .text { max-width: 78ch; }
   .text-top h4 { margin: 0; font-size: 14px; font-weight: 600; color: var(--fg); }
   .text-top small { font-size: 12.5px; color: var(--muted); }
   .body-box {
@@ -506,7 +542,7 @@
     var prods = c.produtos || [];
     var html = '<div style="display:grid;gap:18px">' +
       '<div class="club-head"><div>' + swatch(c.cores, "stripe") + "<h2>" + esc(c.nome) + "</h2>" +
-      '<p class="meta"><b>' + prods.length + (prods.length === 1 ? " produto" : " produtos") + "</b> · descrição curta e completa para cada um</p></div></div>";
+      '<p class="meta"><b>' + prods.length + (prods.length === 1 ? " produto" : " produtos") + "</b> · textos prontos para copiar</p></div></div>";
     if (CONTENT.exemplo) {
       html += '<div class="notice" role="note"><span><b>Textos de exemplo.</b> As descrições aprovadas de cada clube substituem estes textos em breve.</span></div>';
     }
@@ -516,10 +552,13 @@
       html += '<div class="products">' + prods.map(function (p, i) {
         return '<article class="product" data-i="' + i + '">' +
           '<div class="p-head"><div><p class="cat">' + esc(p.categoria || "") + "</p><h3>" + esc(p.nome) + "</h3></div>" +
-          '<button class="btn btn--line" type="button" data-copy="tudo">' + ICON_COPY + "Copiar tudo</button></div>" +
-          '<div class="texts">' +
-          textBlock("Descrição curta", "Vitrine, anúncio, embalagem", p.curto || "", "curto") +
-          textBlock("Descrição completa", "Página do produto no e-commerce", p.longo || "", "longo") +
+          (p.curto && p.longo ? '<button class="btn btn--line" type="button" data-copy="tudo">' + ICON_COPY + "Copiar tudo</button>" : "") + "</div>" +
+          (p.curto && p.longo
+            ? '<div class="texts">' +
+              textBlock("Descrição curta", "Vitrine, anúncio, embalagem", p.curto, "curto") +
+              textBlock("Descrição completa", "Página do produto no e-commerce", p.longo, "longo")
+            : '<div class="texts single">' +
+              textBlock("Descrição do produto", "E-commerce, marketplace e redes sociais", p.longo || p.curto || "", p.longo ? "longo" : "curto")) +
           "</div></article>";
       }).join("") + "</div>";
     }
@@ -529,6 +568,8 @@
   function select(id, push) {
     var c = CONTENT.clubes.filter(function (x) { return x.id === id; })[0] || CONTENT.clubes[0] || null;
     current = c;
+    if (c && c.paleta) document.documentElement.setAttribute("data-paleta", c.paleta);
+    else document.documentElement.removeAttribute("data-paleta");
     renderChips(); renderClub(); renderDrive();
     if (c) {
       try { localStorage.setItem(LS_CLUB, c.id); } catch (e) {}
@@ -577,7 +618,7 @@
     if (!b || !current) return;
     var art = b.closest(".product"), p = current.produtos[+art.getAttribute("data-i")], what = b.getAttribute("data-copy");
     if (what === "tudo") {
-      copyText(p.nome + "\n\n" + (p.curto || "") + "\n\n" + (p.longo || ""), b, null);
+      copyText([p.nome, p.curto, p.longo].filter(Boolean).join("\n\n"), b, null);
     } else {
       copyText(p[what] || "", b, b.parentNode.querySelector("[data-text]"));
     }
@@ -589,6 +630,7 @@
   $("logoutBtn").addEventListener("click", function () {
     clearSession();
     CONTENT = null; current = null;
+    document.documentElement.removeAttribute("data-paleta");
     $("app").hidden = true; $("gate").hidden = false;
     form.reset(); btn.disabled = false; btn.textContent = "Entrar";
     $("club").innerHTML = ""; uEl.focus();
