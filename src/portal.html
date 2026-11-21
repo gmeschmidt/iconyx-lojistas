@@ -232,6 +232,17 @@
     background: var(--note-bg); color: var(--accent-hover);
   }
   .res .ico svg { width: 24px; height: 24px; }
+  .res .thumb {
+    width: 92px; height: 92px; border-radius: 14px; overflow: hidden; display: grid; place-items: center;
+    background: radial-gradient(circle at 50% 40%, var(--surface), var(--sunken) 75%); border: 1px solid var(--line);
+  }
+  .res .thumb img { height: 80px; width: auto; max-width: 84px; object-fit: contain; display: block; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .18)); }
+  .club-id { display: flex; align-items: center; gap: 18px; }
+  .crest {
+    width: 76px; height: 76px; flex: none; border-radius: 50%; display: grid; place-items: center;
+    background: #ffffff; border: 1px solid var(--line); box-shadow: var(--shadow-sm), inset 0 0 0 4px var(--sunken);
+  }
+  .crest img { height: 70%; width: auto; max-width: 70%; object-fit: contain; display: block; }
   .res h4 { margin: 0; font-size: 17px; font-weight: 700; color: var(--fg); line-height: 1.3; }
   .res p { font-size: 14.5px; margin-top: 4px; max-width: 64ch; }
   .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
@@ -345,6 +356,10 @@
     .hero p { font-size: 15.5px; }
     .res { grid-template-columns: minmax(0, 1fr); padding: 18px 16px; }
     .res .ico { display: none; }
+    .res .thumb { width: 100%; height: 150px; }
+    .res .thumb img { height: 128px; max-width: 70%; }
+    .crest { width: 60px; height: 60px; }
+    .club-id { gap: 14px; }
     .res-act .btn { width: 100%; }
     .res-act { justify-items: stretch; }
     .masthead::after { display: none; }
@@ -526,21 +541,19 @@
     else a.hidden = true;
   }
 
-  function sourceName(url) {
-    return /workdrive\.zoho/i.test(url) ? "Zoho WorkDrive" : /drive\.google/i.test(url) ? "Google Drive" : "Link externo";
-  }
   function resources(c) {
     var list = (c.recursos || []).slice();
     if (!list.length && c.workdrive) list.push({ titulo: "Fotos dos produtos", url: c.workdrive });
     return list;
   }
   function resCard(r) {
-    var src = sourceName(r.url || "");
-    return '<article class="res"><div class="ico">' + (r.tipo === "pasta" ? ICON_FILE : ICON_IMG) + "</div>" +
+    var vis = r.imagem ? '<div class="thumb"><img src="' + esc(r.imagem) + '" alt=""></div>'
+      : '<div class="ico">' + (r.tipo === "pasta" ? ICON_FILE : ICON_IMG) + "</div>";
+    return '<article class="res">' + vis +
       "<div><h4>" + esc(r.titulo) + "</h4>" + (r.descricao ? "<p>" + esc(r.descricao) + "</p>" : "") +
       (r.tags && r.tags.length ? '<div class="tags">' + r.tags.map(function (t) { return "<span>" + esc(t) + "</span>"; }).join("") + "</div>" : "") +
       '</div><div class="res-act">' +
-      (r.url ? linkBtn(r.url, "Abrir no " + (src === "Link externo" ? "navegador" : src), true) + '<span class="src">Abre em nova aba</span>'
+      (r.url ? linkBtn(r.url, r.botao || "Abrir imagens dos produtos", true) + '<span class="src">Abre em nova aba</span>'
              : '<span class="btn btn--accent" aria-disabled="true">Em preparação</span>') +
       "</div></article>";
   }
@@ -565,8 +578,10 @@
     var prods = c.produtos || [];
     var res = resources(c);
     var html = '<div class="club">' +
-      '<div class="club-head"><div>' + swatch(c.cores, "stripe") + "<h2>" + esc(c.nome) + "</h2>" +
-      '<p class="meta"><b>' + prods.length + (prods.length === 1 ? " produto" : " produtos") + "</b> · " + res.length + (res.length === 1 ? " pasta de imagens" : " pastas de imagens") + "</p></div></div>";
+      '<div class="club-head"><div class="club-id">' +
+      (c.escudo ? '<span class="crest"><img src="' + esc(c.escudo) + '" alt="Escudo do ' + esc(c.nome) + '"></span>' : "") +
+      "<div>" + (c.escudo ? "" : swatch(c.cores, "stripe")) + "<h2>" + esc(c.nome) + "</h2>" +
+      '<p class="meta"><b>' + prods.length + (prods.length === 1 ? " produto" : " produtos") + "</b> · " + res.length + (res.length === 1 ? " pasta de imagens" : " pastas de imagens") + "</p></div></div></div>";
     html += '<section class="sec" aria-labelledby="secRes"><div class="sec-head"><h3 id="secRes">Imagens e materiais</h3>' +
       "<p>Arquivos oficiais do " + esc(c.nome) + " para baixar e usar na sua loja</p></div>" +
       (res.length ? '<div class="res-list">' + res.map(resCard).join("") + "</div>"
