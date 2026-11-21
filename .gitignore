@@ -1,0 +1,4 @@
+# Conteúdo decifrado para edição: nunca vai para o repositório (público)
+conteudo.local.json
+*.local.json
+node_modules/

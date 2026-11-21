@@ -1,0 +1,616 @@
+<title>Portal do Lojista ICONYX</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Asap+Condensed:wght@600;700&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+  /* Layout: faixa navy de marca no topo, cartão do banco de imagens, seletor de clube fixo e
+     lista de produtos em que cada um traz a descrição curta e a completa lado a lado, com cópia em um toque. */
+  :root {
+    --navy-950: #0d1533;
+    --navy-900: #121c47;
+    --navy-800: #182463;
+    --navy-500: #3c53b8;
+    --gold-500: #f5a623;
+    --gold-600: #e0921a;
+
+    --bg: #f6f7fb;
+    --surface: #ffffff;
+    --sunken: #eceef5;
+    --line: #dadde8;
+    --line-strong: #b9bfd3;
+    --fg: #0d1533;
+    --fg-2: #4b5273;
+    --muted: #666f92;
+    --brand: #121c47;
+    --brand-2: #182463;
+    --on-brand: #ffffff;
+    --on-brand-muted: #b9bfd3;
+    --accent: #f5a623;
+    --accent-hover: #e0921a;
+    --on-accent: #0d1533;
+    --chip-on-bg: #182463;
+    --chip-on-fg: #ffffff;
+    --ok: #1c7a4a;
+    --danger: #c0362c;
+    --danger-soft: #ffb9b2;
+    --note-bg: #fff6e3;
+    --note-line: #f5a623;
+    --focus: 0 0 0 3px rgba(60, 83, 184, .35);
+    --shadow-sm: 0 1px 3px rgba(13, 21, 51, .08);
+    --shadow-md: 0 6px 16px rgba(13, 21, 51, .10);
+    --shadow-lg: 0 16px 40px rgba(13, 21, 51, .18);
+
+    --display: "Asap Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --r-sm: 6px; --r-md: 10px; --r-lg: 16px; --r-pill: 999px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0b1129; --surface: #121a3a; --sunken: #0e1531; --line: #253063; --line-strong: #34418a;
+      --fg: #eef0f8; --fg-2: #c3c8de; --muted: #8b93b0;
+      --brand: #0d1533; --brand-2: #182463;
+      --chip-on-bg: #f5a623; --chip-on-fg: #0d1533;
+      --ok: #4cc48a; --note-bg: #2a2412; --note-line: #c98a16;
+      --focus: 0 0 0 3px rgba(255, 191, 77, .45);
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, .3); --shadow-md: 0 6px 16px rgba(0, 0, 0, .3);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0b1129; --surface: #121a3a; --sunken: #0e1531; --line: #253063; --line-strong: #34418a;
+    --fg: #eef0f8; --fg-2: #c3c8de; --muted: #8b93b0;
+    --brand: #0d1533; --brand-2: #182463;
+    --chip-on-bg: #f5a623; --chip-on-fg: #0d1533;
+    --ok: #4cc48a; --note-bg: #2a2412; --note-line: #c98a16;
+    --focus: 0 0 0 3px rgba(255, 191, 77, .45);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, .3); --shadow-md: 0 6px 16px rgba(0, 0, 0, .3);
+    color-scheme: dark;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg-2);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 { margin: 0; color: var(--fg); text-wrap: balance; }
+  p { margin: 0; }
+  a { color: inherit; }
+  button { font: inherit; }
+  .wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .eyebrow {
+    font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--accent);
+  }
+  .btn {
+    appearance: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    font-weight: 600; font-size: 14px; line-height: 1; padding: 11px 18px;
+    border-radius: var(--r-md); border: 1px solid transparent; cursor: pointer; text-decoration: none;
+    white-space: nowrap; transition: background .15s ease, border-color .15s ease, color .15s ease;
+  }
+  .btn:focus-visible, .chip:focus-visible, .copy:focus-visible { outline: none; box-shadow: var(--focus); }
+  .btn svg { width: 16px; height: 16px; flex: none; }
+  .btn--accent { background: var(--accent); color: var(--on-accent); }
+  .btn--accent:hover { background: var(--accent-hover); }
+  .btn--accent[aria-disabled="true"] { background: var(--sunken); color: var(--muted); cursor: not-allowed; border-color: var(--line); }
+  .btn--ghost { background: transparent; color: var(--on-brand); border-color: rgba(255, 255, 255, .28); }
+  .btn--ghost:hover { border-color: var(--on-brand); background: rgba(255, 255, 255, .06); }
+  .btn--line { background: var(--surface); color: var(--fg); border-color: var(--line-strong); }
+  .btn--line:hover { background: var(--sunken); }
+
+  /* ---------- Acesso ---------- */
+  #gate {
+    min-height: 100vh;
+    display: grid; place-items: center;
+    padding-top: calc(40px + env(safe-area-inset-top, 0px));
+    padding-bottom: 40px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    margin-top: calc(-1 * env(safe-area-inset-top, 0px));
+    background:
+      radial-gradient(900px 520px at 78% -10%, rgba(245, 166, 35, .13), transparent 60%),
+      radial-gradient(760px 500px at 6% 110%, rgba(60, 83, 184, .30), transparent 55%),
+      var(--navy-900);
+  }
+  .gate-box {
+    width: 100%; max-width: 384px;
+    background: var(--navy-800);
+    border: 1px solid rgba(255, 255, 255, .1);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-lg);
+    padding: 32px;
+    color: #ffffff;
+  }
+  .gate-box .logo { height: 24px; width: auto; display: block; margin-bottom: 24px; }
+  .gate-box h2 { color: #ffffff; font-family: var(--display); font-weight: 700; font-size: 32px; line-height: 1.05; margin-top: 8px; }
+  .gate-box .hint { margin: 8px 0 24px; font-size: 14px; color: #b9bfd3; }
+  .gate-box form { display: flex; flex-direction: column; gap: 16px; }
+  .gate-box label.field { display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500; }
+  .gate-box input[type="text"], .gate-box input[type="password"] {
+    font: inherit; font-size: 16px; padding: 10px 14px; border-radius: var(--r-md);
+    border: 1px solid #b9bfd3; background: #ffffff; color: #0d1533; outline: none; color-scheme: light;
+  }
+  .gate-box input:focus-visible { box-shadow: 0 0 0 3px rgba(255, 191, 77, .45); border-color: #ffbf4d; }
+  .gate-box input[aria-invalid="true"] { border-color: var(--danger); }
+  .gate-box .remember { display: flex; align-items: center; gap: 10px; font-size: 14px; color: #dadde8; cursor: pointer; }
+  .gate-box .remember input { width: 18px; height: 18px; accent-color: var(--gold-500); margin: 0; }
+  .gate-box .err { min-height: 1.2em; font-size: 13px; color: var(--danger-soft); margin-top: -6px; }
+  .gate-box .btn { width: 100%; padding: 13px 18px; font-size: 15px; }
+  .gate-box .btn:disabled { opacity: .65; cursor: progress; }
+  .gate-box .foot { margin-top: 18px; font-size: 12.5px; color: #b9bfd3; line-height: 1.5; }
+
+  /* ---------- Topo ---------- */
+  .masthead {
+    background: var(--brand);
+    color: var(--on-brand);
+    margin-top: calc(-1 * env(safe-area-inset-top, 0px));
+    padding-top: env(safe-area-inset-top, 0px);
+    position: relative; overflow: hidden;
+  }
+  .masthead::after {
+    /* trilha de "pinos" de bloco, o detalhe da marca */
+    content: ""; position: absolute; right: -10px; bottom: -14px; width: 340px; height: 120px;
+    background-image: radial-gradient(circle at 18px 18px, rgba(245, 166, 35, .16) 11px, transparent 12px);
+    background-size: 40px 40px; pointer-events: none;
+  }
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 20px; }
+  .top .logo { height: 24px; width: auto; display: block; }
+  .who { display: flex; align-items: center; gap: 14px; min-width: 0; }
+  .who span { font-size: 14px; color: var(--on-brand-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .who b { color: var(--on-brand); font-weight: 600; }
+  .who .btn { padding: 8px 14px; font-size: 13px; }
+  .hero { padding-block: 28px 84px; position: relative; z-index: 1; max-width: 680px; }
+  .hero h1 {
+    color: var(--on-brand); font-family: var(--display); font-weight: 700;
+    font-size: clamp(34px, 5.4vw, 52px); line-height: 1.02; margin-top: 10px;
+  }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero p { margin-top: 14px; color: var(--on-brand-muted); font-size: 17px; max-width: 54ch; }
+
+  /* ---------- Banco de imagens ---------- */
+  main { padding-block: 28px 56px; display: grid; gap: 28px; }
+  .drive {
+    margin-top: -56px; position: relative; z-index: 2;
+    display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 20px; align-items: center;
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg);
+    box-shadow: var(--shadow-md); padding: 22px 24px;
+  }
+  .drive .ico {
+    width: 52px; height: 52px; border-radius: 12px; display: grid; place-items: center;
+    background: var(--note-bg); color: var(--accent-hover);
+  }
+  .drive .ico svg { width: 26px; height: 26px; }
+  .drive h2 { font-family: var(--display); font-weight: 700; font-size: 24px; line-height: 1.1; }
+  .drive p { font-size: 14.5px; margin-top: 4px; max-width: 62ch; }
+  .drive .actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
+
+  /* ---------- Seletor de clube ---------- */
+  body::before {
+    content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg);
+  }
+  .picker {
+    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+    background: var(--bg);
+    padding-block: 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  .picker-row { display: flex; align-items: center; gap: 14px; }
+  .picker-row > .lbl { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); flex: none; }
+  .chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 3px; margin: -3px; min-width: 0; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip {
+    appearance: none; flex: none; display: inline-flex; align-items: center; gap: 8px;
+    font-size: 14px; font-weight: 500; line-height: 1.2; padding: 8px 14px;
+    border-radius: var(--r-pill); border: 1px solid var(--line-strong);
+    background: var(--surface); color: var(--fg); cursor: pointer;
+    transition: background .15s ease, border-color .15s ease, color .15s ease;
+  }
+  .chip:hover { background: var(--sunken); }
+  .chip[aria-pressed="true"] { background: var(--chip-on-bg); border-color: var(--chip-on-bg); color: var(--chip-on-fg); }
+  .chip .sw { width: 14px; height: 14px; border-radius: 50%; overflow: hidden; display: flex; transform: rotate(-45deg); box-shadow: 0 0 0 1px rgba(127, 127, 127, .45); }
+  .chip .sw i { flex: 1; }
+
+  /* ---------- Clube ---------- */
+  .club-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px 20px; flex-wrap: wrap; }
+  .club-head .stripe { display: flex; width: 56px; height: 6px; border-radius: 3px; overflow: hidden; margin-bottom: 12px; box-shadow: 0 0 0 1px var(--line); }
+  .club-head .stripe i { flex: 1; }
+  .club-head h2 { font-family: var(--display); font-weight: 700; font-size: clamp(30px, 4.2vw, 40px); line-height: 1; }
+  .club-head .meta { margin-top: 8px; font-size: 14px; color: var(--muted); }
+  .club-head .meta b { color: var(--fg-2); font-weight: 600; }
+  .notice {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--note-bg); border: 1px solid var(--line); border-left: 3px solid var(--note-line);
+    border-radius: var(--r-md); padding: 12px 16px; font-size: 14px; color: var(--fg-2);
+  }
+  .notice b { color: var(--fg); }
+
+  .products { display: grid; gap: 16px; }
+  .product {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg);
+    box-shadow: var(--shadow-sm); padding: 22px 24px 24px; display: grid; gap: 18px; min-width: 0;
+  }
+  .p-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px 16px; flex-wrap: wrap; }
+  .p-head .cat { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .p-head h3 { font-size: 20px; font-weight: 700; line-height: 1.25; margin-top: 2px; }
+  .p-head .btn { padding: 9px 14px; font-size: 13px; }
+  .texts { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.55fr); gap: 16px; }
+  .text { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .text-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .text-top h4 { margin: 0; font-size: 14px; font-weight: 600; color: var(--fg); }
+  .text-top small { font-size: 12.5px; color: var(--muted); }
+  .body-box {
+    flex: 1; position: relative;
+    background: var(--sunken); border: 1px solid var(--line); border-radius: var(--r-md);
+    padding: 14px 16px 54px; font-size: 15px; line-height: 1.6; color: var(--fg);
+    white-space: pre-line; overflow-wrap: anywhere;
+  }
+  .body-box .count {
+    position: absolute; left: 16px; bottom: 16px; font-size: 12px; color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .copy {
+    position: absolute; right: 10px; bottom: 10px;
+    appearance: none; display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 600; padding: 8px 12px; border-radius: var(--r-md);
+    border: 1px solid var(--line-strong); background: var(--surface); color: var(--fg); cursor: pointer;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .copy:hover { background: var(--bg); border-color: var(--fg-2); }
+  .copy svg { width: 15px; height: 15px; }
+  .copy.done { background: var(--ok); border-color: var(--ok); color: #ffffff; }
+  .empty { padding: 40px 24px; text-align: center; border: 1px dashed var(--line-strong); border-radius: var(--r-lg); color: var(--muted); }
+
+  footer { border-top: 1px solid var(--line); padding-block: 20px 32px; font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 24px; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%) translateY(10px); opacity: 0; pointer-events: none;
+    background: var(--navy-950); color: #ffffff; font-size: 14px; padding: 12px 16px;
+    border-radius: var(--r-md); box-shadow: var(--shadow-lg); border-left: 3px solid #4cc48a;
+    transition: opacity .2s ease, transform .2s ease; z-index: 50; max-width: min(92vw, 440px);
+  }
+  .toast.err { border-left-color: var(--danger); }
+  .toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 820px) {
+    .texts { grid-template-columns: minmax(0, 1fr); }
+    .drive { grid-template-columns: auto minmax(0, 1fr); }
+    .drive .actions { grid-column: 1 / -1; justify-content: flex-start; }
+  }
+  @media (max-width: 560px) {
+    .gate-box { padding: 26px 22px; }
+    .who span { display: none; }
+    .hero { padding-block: 16px 80px; }
+    .hero p { font-size: 15.5px; }
+    .drive { grid-template-columns: minmax(0, 1fr); padding: 20px; }
+    .drive .ico { display: none; }
+    .masthead::after { display: none; }
+    .drive .actions .btn { flex: 1 1 auto; }
+    .picker-row > .lbl { display: none; }
+    .product { padding: 18px 16px 18px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div id="gate">
+  <div class="gate-box" id="gateBox">
+    <img class="logo" src="__LOGO__" alt="ICONYX">
+    <p class="eyebrow">Acesso de lojistas</p>
+    <h2>Portal do Lojista</h2>
+    <p class="hint">Entre com o usuário e a senha que a ICONYX enviou para a sua loja.</p>
+    <form id="gateForm" autocomplete="on" novalidate>
+      <label class="field">Usuário
+        <input id="gateUser" name="username" type="text" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required>
+      </label>
+      <label class="field">Senha
+        <input id="gatePw" name="password" type="password" autocomplete="current-password" required>
+      </label>
+      <label class="remember"><input id="gateRemember" type="checkbox"> Manter conectado neste aparelho</label>
+      <div class="err" id="gateErr" role="alert" aria-live="polite"></div>
+      <button class="btn btn--accent" type="submit" id="gateBtn">Entrar</button>
+    </form>
+    <p class="foot">O acesso é individual de cada loja. Não compartilhe sua senha. Esqueceu? Fale com o seu contato comercial na ICONYX.</p>
+  </div>
+</div>
+
+<div id="app" hidden>
+  <header class="masthead">
+    <div class="wrap">
+      <div class="top">
+        <img class="logo" src="__LOGO__" alt="ICONYX">
+        <div class="who">
+          <span>Olá, <b id="whoName">lojista</b></span>
+          <button class="btn btn--ghost" id="logoutBtn" type="button">Sair</button>
+        </div>
+      </div>
+      <div class="hero">
+        <p class="eyebrow">Portal do Lojista</p>
+        <h1>Tudo para vender <em>ICONYX</em> na sua loja</h1>
+        <p>Descrições prontas para copiar e colar no seu e-commerce, organizadas por clube, e o acesso ao banco oficial de imagens dos produtos.</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <section class="drive" aria-labelledby="driveTitle">
+      <div class="ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5.2-5.2a1.5 1.5 0 0 0-2.1 0L5 19.5"/></svg>
+      </div>
+      <div>
+        <h2 id="driveTitle">Banco de imagens dos produtos</h2>
+        <p id="driveText"></p>
+      </div>
+      <div class="actions" id="driveActions"></div>
+    </section>
+  </div>
+
+  <nav class="picker" aria-label="Escolha o clube">
+    <div class="wrap picker-row">
+      <span class="lbl" id="pickLbl">Clube</span>
+      <div class="chips" id="chips" role="group" aria-labelledby="pickLbl"></div>
+    </div>
+  </nav>
+
+  <main class="wrap" id="main">
+    <div id="club"></div>
+    <footer>
+      <span>Conteúdo de uso exclusivo de lojistas parceiros ICONYX.</span>
+      <span id="updated"></span>
+    </footer>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script id="payload" type="application/json">__PAYLOAD__</script>
+<script>
+(function () {
+  "use strict";
+  var DATA = JSON.parse(document.getElementById("payload").textContent);
+  var SS_KEY = "iconyx-lojista-sessao";
+  var LS_CLUB = "iconyx-lojista-clube";
+  var enc = new TextEncoder(), dec = new TextDecoder();
+  var $ = function (id) { return document.getElementById(id); };
+
+  var ICON_COPY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>';
+  var ICON_OK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  var ICON_OUT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>';
+
+  /* ---------- Cripto (mesmo esquema de tools/portal.mjs) ---------- */
+  function b64(u8) { var s = ""; for (var i = 0; i < u8.length; i++) s += String.fromCharCode(u8[i]); return btoa(s); }
+  function unb64(s) { var bin = atob(s), u8 = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i); return u8; }
+  function norm(u) { return String(u).trim().toLowerCase(); }
+  async function userId(u) {
+    var h = await crypto.subtle.digest("SHA-256", enc.encode(DATA.idSalt + norm(u)));
+    return Array.prototype.map.call(new Uint8Array(h), function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+  }
+  async function passKey(u, p, salt, iters) {
+    var base = await crypto.subtle.importKey("raw", enc.encode(norm(u) + "\n" + p), "PBKDF2", false, ["deriveKey"]);
+    return crypto.subtle.deriveKey({ name: "PBKDF2", salt: salt, iterations: iters, hash: "SHA-256" }, base,
+      { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+  }
+  async function openBox(key, box) {
+    var pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(box.iv) }, key, unb64(box.ct));
+    return JSON.parse(dec.decode(pt));
+  }
+  async function openContent(kRaw) {
+    var key = await crypto.subtle.importKey("raw", unb64(kRaw), "AES-GCM", false, ["decrypt"]);
+    return openBox(key, DATA.conteudo);
+  }
+  async function login(u, p) {
+    var id = await userId(u);
+    var e = DATA.acessos.entradas.filter(function (x) { return x.id === id; })[0];
+    if (!e) return null;
+    try { return await openBox(await passKey(u, p, unb64(e.salt), e.iters), e); } catch (err) { return null; }
+  }
+
+  /* ---------- Sessão ---------- */
+  function store(remember) { try { return remember ? localStorage : sessionStorage; } catch (e) { return null; } }
+  function saveSession(s, remember) {
+    var st = store(remember); if (!st) return;
+    try { st.setItem(SS_KEY, JSON.stringify(s)); } catch (e) {}
+  }
+  function readSession() {
+    var keys = [function () { return sessionStorage; }, function () { return localStorage; }];
+    for (var i = 0; i < keys.length; i++) {
+      try { var v = keys[i]().getItem(SS_KEY); if (v) return JSON.parse(v); } catch (e) {}
+    }
+    return null;
+  }
+  function clearSession() {
+    try { sessionStorage.removeItem(SS_KEY); } catch (e) {}
+    try { localStorage.removeItem(SS_KEY); } catch (e) {}
+  }
+
+  /* ---------- Tela de acesso ---------- */
+  var form = $("gateForm"), uEl = $("gateUser"), pEl = $("gatePw"), errEl = $("gateErr"), btn = $("gateBtn");
+  function fail(msg) {
+    errEl.textContent = msg;
+    uEl.setAttribute("aria-invalid", "true"); pEl.setAttribute("aria-invalid", "true");
+    btn.disabled = false; btn.textContent = "Entrar";
+    pEl.value = ""; pEl.focus();
+    var box = $("gateBox");
+    if (box.animate && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      box.animate([{ transform: "translateX(-7px)" }, { transform: "translateX(7px)" }, { transform: "translateX(0)" }], { duration: 190 });
+    }
+  }
+  form.addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    errEl.textContent = "";
+    uEl.removeAttribute("aria-invalid"); pEl.removeAttribute("aria-invalid");
+    if (!uEl.value.trim() || !pEl.value) { fail("Preencha usuário e senha."); return; }
+    btn.disabled = true; btn.textContent = "Verificando…";
+    login(uEl.value, pEl.value).then(function (r) {
+      if (!r) { fail("Usuário ou senha incorretos. Confira e tente de novo."); return; }
+      return openContent(r.k).then(function (content) {
+        var s = { k: r.k, nome: r.nome };
+        saveSession(s, $("gateRemember").checked);
+        start(s, content);
+      });
+    }).catch(function () { fail("Não foi possível validar o acesso neste navegador. Tente de novo."); });
+  });
+  if (!window.crypto || !crypto.subtle) {
+    errEl.textContent = "Este navegador não permite abrir o portal. Use uma versão atualizada do Chrome, Safari ou Edge.";
+    btn.disabled = true;
+  }
+
+  /* ---------- Portal ---------- */
+  var CONTENT = null, current = null;
+
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function fmtDate(iso) { var p = String(iso || "").split("-"); return p.length === 3 ? p[2] + "/" + p[1] + "/" + p[0] : ""; }
+  function swatch(cores, cls) {
+    return '<span class="' + cls + '" aria-hidden="true">' + (cores || []).map(function (c) { return '<i style="background:' + esc(c) + '"></i>'; }).join("") + "</span>";
+  }
+  function linkBtn(url, label, primary) {
+    if (!url) return "";
+    return '<a class="btn ' + (primary ? "btn--accent" : "btn--line") + '" href="' + esc(url) + '" target="_blank" rel="noopener noreferrer">' + esc(label) + ICON_OUT + "</a>";
+  }
+
+  function renderDrive() {
+    var d = CONTENT.workdrive || {};
+    $("driveText").textContent = d.descricao || "Fotos oficiais dos produtos no Zoho WorkDrive.";
+    var club = current && current.workdrive ? linkBtn(current.workdrive, "Imagens do " + current.nome, false) : "";
+    var main = d.url ? linkBtn(d.url, "Abrir no WorkDrive", true)
+      : '<span class="btn btn--accent" aria-disabled="true">Link em configuração</span>';
+    $("driveActions").innerHTML = club + main;
+  }
+
+  function renderChips() {
+    $("chips").innerHTML = CONTENT.clubes.map(function (c) {
+      return '<button class="chip" type="button" data-id="' + esc(c.id) + '" aria-pressed="' + (current && c.id === current.id) + '">' +
+        swatch(c.cores, "sw") + esc(c.nome) + "</button>";
+    }).join("");
+  }
+
+  function textBlock(label, hint, text, key) {
+    return '<div class="text"><div class="text-top"><h4>' + label + "</h4><small>" + hint + "</small></div>" +
+      '<div class="body-box"><span data-text>' + esc(text) + "</span>" +
+      '<span class="count">' + text.length.toLocaleString("pt-BR") + " caracteres</span>" +
+      '<button class="copy" type="button" data-copy="' + key + '" aria-label="Copiar ' + label.toLowerCase() + '">' + ICON_COPY + "<span>Copiar</span></button></div></div>";
+  }
+
+  function renderClub() {
+    var c = current, el = $("club");
+    if (!c) { el.innerHTML = '<div class="empty">Nenhum clube disponível ainda.</div>'; return; }
+    var prods = c.produtos || [];
+    var html = '<div style="display:grid;gap:18px">' +
+      '<div class="club-head"><div>' + swatch(c.cores, "stripe") + "<h2>" + esc(c.nome) + "</h2>" +
+      '<p class="meta"><b>' + prods.length + (prods.length === 1 ? " produto" : " produtos") + "</b> · descrição curta e completa para cada um</p></div></div>";
+    if (CONTENT.exemplo) {
+      html += '<div class="notice" role="note"><span><b>Textos de exemplo.</b> As descrições aprovadas de cada clube substituem estes textos em breve.</span></div>';
+    }
+    if (!prods.length) {
+      html += '<div class="empty">Os textos deste clube estão em preparação.</div>';
+    } else {
+      html += '<div class="products">' + prods.map(function (p, i) {
+        return '<article class="product" data-i="' + i + '">' +
+          '<div class="p-head"><div><p class="cat">' + esc(p.categoria || "") + "</p><h3>" + esc(p.nome) + "</h3></div>" +
+          '<button class="btn btn--line" type="button" data-copy="tudo">' + ICON_COPY + "Copiar tudo</button></div>" +
+          '<div class="texts">' +
+          textBlock("Descrição curta", "Vitrine, anúncio, embalagem", p.curto || "", "curto") +
+          textBlock("Descrição completa", "Página do produto no e-commerce", p.longo || "", "longo") +
+          "</div></article>";
+      }).join("") + "</div>";
+    }
+    el.innerHTML = html + "</div>";
+  }
+
+  function select(id, push) {
+    var c = CONTENT.clubes.filter(function (x) { return x.id === id; })[0] || CONTENT.clubes[0] || null;
+    current = c;
+    renderChips(); renderClub(); renderDrive();
+    if (c) {
+      try { localStorage.setItem(LS_CLUB, c.id); } catch (e) {}
+      if (push && location.hash !== "#" + c.id) { try { history.replaceState(null, "", "#" + c.id); } catch (e) { location.hash = c.id; } }
+    }
+  }
+
+  /* ---------- Copiar ---------- */
+  var toastT;
+  function toast(msg, isErr) {
+    var t = $("toast"); t.textContent = msg; t.classList.toggle("err", !!isErr); t.classList.add("on");
+    clearTimeout(toastT); toastT = setTimeout(function () { t.classList.remove("on"); }, 2200);
+  }
+  function legacyCopy(text) {
+    var ta = document.createElement("textarea");
+    ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0"; ta.style.top = "0";
+    document.body.appendChild(ta); ta.select();
+    var ok = false; try { ok = document.execCommand("copy"); } catch (e) {}
+    document.body.removeChild(ta); return ok;
+  }
+  function selectEl(el) {
+    try { var r = document.createRange(); r.selectNodeContents(el); var s = getSelection(); s.removeAllRanges(); s.addRange(r); } catch (e) {}
+  }
+  function copyText(text, btnEl, selectTarget) {
+    function done() {
+      toast("Texto copiado. Agora é só colar.");
+      if (btnEl.classList.contains("copy")) {
+        btnEl.classList.add("done"); btnEl.innerHTML = ICON_OK + "<span>Copiado</span>";
+        setTimeout(function () { btnEl.classList.remove("done"); btnEl.innerHTML = ICON_COPY + "<span>Copiar</span>"; }, 1800);
+      }
+    }
+    function fallback() {
+      if (legacyCopy(text)) { done(); return; }
+      if (selectTarget) selectEl(selectTarget);
+      toast("Não deu para copiar automaticamente. O texto foi selecionado: use Ctrl+C ou Copiar.", true);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, fallback);
+    } else fallback();
+  }
+
+  document.addEventListener("click", function (ev) {
+    var chip = ev.target.closest(".chip");
+    if (chip) { select(chip.getAttribute("data-id"), true); return; }
+    var b = ev.target.closest("[data-copy]");
+    if (!b || !current) return;
+    var art = b.closest(".product"), p = current.produtos[+art.getAttribute("data-i")], what = b.getAttribute("data-copy");
+    if (what === "tudo") {
+      copyText(p.nome + "\n\n" + (p.curto || "") + "\n\n" + (p.longo || ""), b, null);
+    } else {
+      copyText(p[what] || "", b, b.parentNode.querySelector("[data-text]"));
+    }
+  });
+  window.addEventListener("hashchange", function () {
+    var id = location.hash.slice(1);
+    if (CONTENT && id && (!current || id !== current.id)) select(id, false);
+  });
+  $("logoutBtn").addEventListener("click", function () {
+    clearSession();
+    CONTENT = null; current = null;
+    $("app").hidden = true; $("gate").hidden = false;
+    form.reset(); btn.disabled = false; btn.textContent = "Entrar";
+    $("club").innerHTML = ""; uEl.focus();
+  });
+
+  function start(session, content) {
+    CONTENT = content;
+    $("whoName").textContent = session.nome || "lojista";
+    $("updated").textContent = content.atualizadoEm ? "Textos atualizados em " + fmtDate(content.atualizadoEm) : "";
+    var want = location.hash.slice(1);
+    if (!want) { try { want = localStorage.getItem(LS_CLUB) || ""; } catch (e) {} }
+    select(want, false);
+    $("gate").hidden = true; $("app").hidden = false;
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- Início ---------- */
+  var s = readSession();
+  if (s && s.k && window.crypto && crypto.subtle) {
+    openContent(s.k).then(function (c) { start(s, c); }, function () { clearSession(); uEl.focus(); });
+  } else {
+    setTimeout(function () { uEl.focus(); }, 60);
+  }
+})();
+</script>

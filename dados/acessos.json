@@ -1,0 +1,19 @@
+{
+  "versao": 1,
+  "entradas": [
+    {
+      "id": "e0696573311a2968f28fcc20df6801946b4ad4385381190da0bc2de52bef9859",
+      "salt": "ONb7swzL8zX76jdEXP77RA==",
+      "iters": 250000,
+      "iv": "GNq4noTsqMJprfsU",
+      "ct": "PtMkAmi7M88hYhX8LtUYl0YJRi9q7FBEHzYXeebSfT1UvXocvfbrcLaIT1JbuPKIWKznWdYKKvnaIeXqQhwabSzHRdeB9TAqv1rFPX0YyxEW5Vcm75PwSsgUOH9tK308x3O4A/RAwsmGJ7HgO8IudB6Kcf64p3eTZQ8iQy7ouyrUoKhWPDxiJzRM2u7p"
+    },
+    {
+      "id": "ead2b27be00d45795db82a0fcc0c2b06644474515ad5c5a936a172c84a3cb7db",
+      "salt": "5tnYikLLY1O4eF2c/7F+Ww==",
+      "iters": 250000,
+      "iv": "/7ACf2EDmardAgYm",
+      "ct": "lnk5m0tXg9x5hBf1XUdc6JNdsUHCszqWJBiqT9kkKqQWvFC1986msDs0AfVL7qIpquc3N9p80ynAABkyNL2AshXR/PCT6nmHFV5zkFUsnVEyjot64dLGYwYWRAjIgbnvPigfHrAzRDfoTrIu7MmaU8btRYpTob9HKcTgGKfPCl+CXAqERb8VxA=="
+    }
+  ]
+}
