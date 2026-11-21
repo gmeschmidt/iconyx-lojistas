@@ -294,6 +294,38 @@
     color-scheme: dark;
   }
   :root[data-paleta="tricolor-sp"] .sec-head { border-bottom-color: var(--brand-2); }
+  /* Paleta verde Palmeiras (#006431). */
+  :root[data-paleta="verde-palmeiras"] {
+    --navy-950: #00261a; --navy-900: #003322; --navy-800: #00422b; --navy-500: #2e9a62;
+    --bg: #f3f8f5; --surface: #ffffff; --sunken: #e6f0ea; --line: #d0e2d7; --line-strong: #a9c9b5;
+    --fg: #04210f; --fg-2: #3e5a48; --muted: #5d7a67;
+    --brand: #006431; --brand-2: #007a3c; --on-brand-muted: #bfe0cc;
+    --chip-on-bg: #006431; --chip-on-fg: #ffffff; --ok: #1c7a4a; --note-bg: #fff6e3; --note-line: #f5a623;
+    --focus: 0 0 0 3px rgba(0, 100, 49, .35);
+    --shadow-sm: 0 1px 3px rgba(0, 38, 26, .08); --shadow-md: 0 6px 16px rgba(0, 38, 26, .10); --shadow-lg: 0 16px 40px rgba(0, 38, 26, .2);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root[data-paleta="verde-palmeiras"]:not([data-theme="light"]) {
+    --navy-950: #00261a; --navy-900: #003322; --navy-800: #00422b; --navy-500: #2e9a62;
+    --bg: #05130b; --surface: #0c2216; --sunken: #081a10; --line: #1a3b28; --line-strong: #285238;
+    --fg: #eef7f1; --fg-2: #c2dacb; --muted: #87a693;
+    --brand: #004422; --brand-2: #006431; --on-brand-muted: #bfe0cc;
+    --chip-on-bg: #f5a623; --chip-on-fg: #04210f; --ok: #4cc48a; --note-bg: #2a2412; --note-line: #c98a16;
+    --focus: 0 0 0 3px rgba(255, 191, 77, .45);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, .4); --shadow-md: 0 6px 16px rgba(0, 0, 0, .4); --shadow-lg: 0 16px 40px rgba(0, 0, 0, .5);
+    color-scheme: dark;
+    }
+  }
+  :root[data-paleta="verde-palmeiras"][data-theme="dark"] {
+    --navy-950: #00261a; --navy-900: #003322; --navy-800: #00422b; --navy-500: #2e9a62;
+    --bg: #05130b; --surface: #0c2216; --sunken: #081a10; --line: #1a3b28; --line-strong: #285238;
+    --fg: #eef7f1; --fg-2: #c2dacb; --muted: #87a693;
+    --brand: #004422; --brand-2: #006431; --on-brand-muted: #bfe0cc;
+    --chip-on-bg: #f5a623; --chip-on-fg: #04210f; --ok: #4cc48a; --note-bg: #2a2412; --note-line: #c98a16;
+    --focus: 0 0 0 3px rgba(255, 191, 77, .45);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, .4); --shadow-md: 0 6px 16px rgba(0, 0, 0, .4); --shadow-lg: 0 16px 40px rgba(0, 0, 0, .5);
+    color-scheme: dark;
+  }
   body { transition: background-color .25s ease; }
 
   *, *::before, *::after { box-sizing: border-box; }
@@ -773,11 +805,12 @@
     if (!c) { el.innerHTML = '<div class="empty">Nenhum clube disponível ainda.</div>'; return; }
     var prods = c.produtos || [];
     var res = resources(c);
+    var nRes = res.filter(function (r) { return r.url; }).length;
     var html = '<div class="club">' +
       '<div class="club-head"><div class="club-id">' +
       (c.escudo ? '<span class="crest"><img src="' + esc(c.escudo) + '" alt="Escudo do ' + esc(c.nome) + '"></span>' : "") +
       "<div>" + (c.escudo ? "" : swatch(c.cores, "stripe")) + "<h2>" + esc(c.nome) + "</h2>" +
-      '<p class="meta"><b>' + prods.length + (prods.length === 1 ? " produto" : " produtos") + "</b> · " + res.length + (res.length === 1 ? " pasta de imagens" : " pastas de imagens") + "</p></div></div></div>";
+      '<p class="meta"><b>' + prods.length + (prods.length === 1 ? " produto" : " produtos") + "</b> · " + (nRes ? nRes + (nRes === 1 ? " pasta de imagens" : " pastas de imagens") : "imagens em preparação") + "</p></div></div></div>";
     html += '<section class="sec" aria-labelledby="secRes"><div class="sec-head"><h3 id="secRes">Imagens e materiais</h3>' +
       "<p>Arquivos oficiais da linha " + esc(c.nome) + " ICONYX para baixar e usar na sua loja</p></div>" +
       (res.length ? '<div class="res-list">' + res.map(resCard).join("") + "</div>"
