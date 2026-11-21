@@ -44,6 +44,7 @@
     --display: "Asap Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
     --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     --r-sm: 6px; --r-md: 10px; --r-lg: 16px; --r-pill: 999px;
+    --brand-stripe: transparent;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
@@ -260,6 +261,39 @@
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, .4); --shadow-md: 0 6px 16px rgba(0, 0, 0, .4); --shadow-lg: 0 16px 40px rgba(0, 0, 0, .5);
     color-scheme: dark;
   }
+  /* Paleta tricolor paulista: topo preto com faixa vermelha (#cd0e16) e destaques em vermelho. */
+  :root[data-paleta="tricolor-sp"] {
+    --navy-950: #111111; --navy-900: #161616; --navy-800: #222222; --navy-500: #555555;
+    --bg: #f7f5f5; --surface: #ffffff; --sunken: #efeaea; --line: #e2d9d9; --line-strong: #c7b9b9;
+    --fg: #141010; --fg-2: #4d4545; --muted: #6e6464;
+    --brand: #141414; --brand-2: #cd0e16; --on-brand-muted: #c9c2c2; --brand-stripe: #cd0e16;
+    --chip-on-bg: #cd0e16; --chip-on-fg: #ffffff; --ok: #1c7a4a; --note-bg: #fff6e3; --note-line: #f5a623;
+    --focus: 0 0 0 3px rgba(205, 14, 22, .35);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, .08); --shadow-md: 0 6px 16px rgba(0, 0, 0, .10); --shadow-lg: 0 16px 40px rgba(0, 0, 0, .2);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root[data-paleta="tricolor-sp"]:not([data-theme="light"]) {
+    --navy-950: #111111; --navy-900: #161616; --navy-800: #222222; --navy-500: #555555;
+    --bg: #0d0b0b; --surface: #1a1616; --sunken: #131010; --line: #322a2a; --line-strong: #4a3d3d;
+    --fg: #f5f0f0; --fg-2: #d3cbcb; --muted: #988d8d;
+    --brand: #000000; --brand-2: #cd0e16; --on-brand-muted: #c9c2c2; --brand-stripe: #cd0e16;
+    --chip-on-bg: #cd0e16; --chip-on-fg: #ffffff; --ok: #4cc48a; --note-bg: #2a2412; --note-line: #c98a16;
+    --focus: 0 0 0 3px rgba(255, 191, 77, .45);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, .4); --shadow-md: 0 6px 16px rgba(0, 0, 0, .4); --shadow-lg: 0 16px 40px rgba(0, 0, 0, .5);
+    color-scheme: dark;
+    }
+  }
+  :root[data-paleta="tricolor-sp"][data-theme="dark"] {
+    --navy-950: #111111; --navy-900: #161616; --navy-800: #222222; --navy-500: #555555;
+    --bg: #0d0b0b; --surface: #1a1616; --sunken: #131010; --line: #322a2a; --line-strong: #4a3d3d;
+    --fg: #f5f0f0; --fg-2: #d3cbcb; --muted: #988d8d;
+    --brand: #000000; --brand-2: #cd0e16; --on-brand-muted: #c9c2c2; --brand-stripe: #cd0e16;
+    --chip-on-bg: #cd0e16; --chip-on-fg: #ffffff; --ok: #4cc48a; --note-bg: #2a2412; --note-line: #c98a16;
+    --focus: 0 0 0 3px rgba(255, 191, 77, .45);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, .4); --shadow-md: 0 6px 16px rgba(0, 0, 0, .4); --shadow-lg: 0 16px 40px rgba(0, 0, 0, .5);
+    color-scheme: dark;
+  }
+  :root[data-paleta="tricolor-sp"] .sec-head { border-bottom-color: var(--brand-2); }
   body { transition: background-color .25s ease; }
 
   *, *::before, *::after { box-sizing: border-box; }
@@ -346,6 +380,7 @@
   /* ---------- Topo ---------- */
   .masthead {
     background: var(--brand);
+    box-shadow: inset 0 -6px 0 var(--brand-stripe);
     color: var(--on-brand);
     margin-top: calc(-1 * env(safe-area-inset-top, 0px));
     padding-top: env(safe-area-inset-top, 0px);
