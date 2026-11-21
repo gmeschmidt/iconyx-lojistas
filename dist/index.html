@@ -452,8 +452,9 @@
   .about-side { display: flex; flex-direction: column; gap: 18px; align-items: flex-start; }
   .about-text { display: grid; gap: 12px; color: var(--fg-2); font-size: 16px; line-height: 1.65; max-width: 68ch; }
   .about-text p:first-child { color: var(--fg); font-weight: 500; }
-  .about-side .btn { padding: 9px 14px; font-size: 13px; }
-  .about-side .btn.done { background: var(--ok); border-color: var(--ok); color: #ffffff; }
+  .about-main { display: flex; flex-direction: column; gap: 18px; align-items: flex-start; min-width: 0; }
+  .about-main .btn { padding: 9px 14px; font-size: 13px; }
+  .about-main .btn.done { background: var(--ok); border-color: var(--ok); color: #ffffff; }
 
   /* ---------- Seções do clube ---------- */
   .club { display: grid; gap: 36px; }
@@ -658,9 +659,11 @@
       <div class="about-card">
         <div class="about-side">
           <div><p class="eyebrow">Sobre a marca e a linha</p><h2 id="aboutTitle"></h2></div>
+        </div>
+        <div class="about-main">
+          <div class="about-text" id="aboutText"></div>
           <button class="btn btn--line" type="button" id="aboutCopy" data-copy-about>Copiar texto</button>
         </div>
-        <div class="about-text" id="aboutText"></div>
       </div>
     </div>
   </section>
