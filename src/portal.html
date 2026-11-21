@@ -132,6 +132,38 @@
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, .4); --shadow-md: 0 6px 16px rgba(0, 0, 0, .4); --shadow-lg: 0 16px 40px rgba(0, 0, 0, .5);
     color-scheme: dark;
   }
+  /* Paleta azul (ex.: Cruzeiro, #002e94). */
+  :root[data-paleta="azul"] {
+    --navy-950: #001a55; --navy-900: #00226e; --navy-800: #002a85; --navy-500: #3d63c4;
+    --bg: #f4f6fb; --surface: #ffffff; --sunken: #e9edf7; --line: #d5dcee; --line-strong: #b0bcdc;
+    --fg: #061a4a; --fg-2: #3f4d72; --muted: #5f6c90;
+    --brand: #002e94; --brand-2: #0038b0; --on-brand-muted: #bcc9ec;
+    --chip-on-bg: #002e94; --chip-on-fg: #ffffff; --ok: #1c7a4a; --note-bg: #fff6e3; --note-line: #f5a623;
+    --focus: 0 0 0 3px rgba(0, 46, 148, .35);
+    --shadow-sm: 0 1px 3px rgba(0, 26, 85, .08); --shadow-md: 0 6px 16px rgba(0, 26, 85, .10); --shadow-lg: 0 16px 40px rgba(0, 26, 85, .2);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root[data-paleta="azul"]:not([data-theme="light"]) {
+    --navy-950: #001a55; --navy-900: #00226e; --navy-800: #002a85; --navy-500: #3d63c4;
+    --bg: #050d24; --surface: #0c1838; --sunken: #08122d; --line: #1d2d5c; --line-strong: #2b3f7a;
+    --fg: #eef1fb; --fg-2: #c3cbe6; --muted: #8a96bd;
+    --brand: #00205f; --brand-2: #002e94; --on-brand-muted: #bcc9ec;
+    --chip-on-bg: #f5a623; --chip-on-fg: #061a4a; --ok: #4cc48a; --note-bg: #2a2412; --note-line: #c98a16;
+    --focus: 0 0 0 3px rgba(255, 191, 77, .45);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, .4); --shadow-md: 0 6px 16px rgba(0, 0, 0, .4); --shadow-lg: 0 16px 40px rgba(0, 0, 0, .5);
+    color-scheme: dark;
+    }
+  }
+  :root[data-paleta="azul"][data-theme="dark"] {
+    --navy-950: #001a55; --navy-900: #00226e; --navy-800: #002a85; --navy-500: #3d63c4;
+    --bg: #050d24; --surface: #0c1838; --sunken: #08122d; --line: #1d2d5c; --line-strong: #2b3f7a;
+    --fg: #eef1fb; --fg-2: #c3cbe6; --muted: #8a96bd;
+    --brand: #00205f; --brand-2: #002e94; --on-brand-muted: #bcc9ec;
+    --chip-on-bg: #f5a623; --chip-on-fg: #061a4a; --ok: #4cc48a; --note-bg: #2a2412; --note-line: #c98a16;
+    --focus: 0 0 0 3px rgba(255, 191, 77, .45);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, .4); --shadow-md: 0 6px 16px rgba(0, 0, 0, .4); --shadow-lg: 0 16px 40px rgba(0, 0, 0, .5);
+    color-scheme: dark;
+  }
   body { transition: background-color .25s ease; }
 
   *, *::before, *::after { box-sizing: border-box; }
