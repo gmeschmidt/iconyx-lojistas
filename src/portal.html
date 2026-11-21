@@ -196,6 +196,38 @@
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, .4); --shadow-md: 0 6px 16px rgba(0, 0, 0, .4); --shadow-lg: 0 16px 40px rgba(0, 0, 0, .5);
     color-scheme: dark;
   }
+  /* Paleta celeste (ex.: Grêmio, #00a0e5). O topo usa um tom mais fechado para o texto branco ficar legível. */
+  :root[data-paleta="celeste"] {
+    --navy-950: #00233a; --navy-900: #002f4d; --navy-800: #003d63; --navy-500: #3fb4ea;
+    --bg: #f3f8fb; --surface: #ffffff; --sunken: #e6f1f7; --line: #d0e3ee; --line-strong: #a9c9dc;
+    --fg: #031d2c; --fg-2: #3b5566; --muted: #5b7586;
+    --brand: #0077ad; --brand-2: #00a0e5; --on-brand-muted: #d3eefa;
+    --chip-on-bg: #00a0e5; --chip-on-fg: #001b2a; --ok: #1c7a4a; --note-bg: #fff6e3; --note-line: #f5a623;
+    --focus: 0 0 0 3px rgba(0, 160, 229, .4);
+    --shadow-sm: 0 1px 3px rgba(0, 35, 58, .08); --shadow-md: 0 6px 16px rgba(0, 35, 58, .10); --shadow-lg: 0 16px 40px rgba(0, 35, 58, .2);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root[data-paleta="celeste"]:not([data-theme="light"]) {
+    --navy-950: #00233a; --navy-900: #002f4d; --navy-800: #003d63; --navy-500: #3fb4ea;
+    --bg: #04121b; --surface: #0b2131; --sunken: #071a27; --line: #173a52; --line-strong: #24546f;
+    --fg: #eef7fc; --fg-2: #c1dbe8; --muted: #85a7ba;
+    --brand: #005480; --brand-2: #0077ad; --on-brand-muted: #d3eefa;
+    --chip-on-bg: #00a0e5; --chip-on-fg: #001b2a; --ok: #4cc48a; --note-bg: #2a2412; --note-line: #c98a16;
+    --focus: 0 0 0 3px rgba(0, 160, 229, .5);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, .4); --shadow-md: 0 6px 16px rgba(0, 0, 0, .4); --shadow-lg: 0 16px 40px rgba(0, 0, 0, .5);
+    color-scheme: dark;
+    }
+  }
+  :root[data-paleta="celeste"][data-theme="dark"] {
+    --navy-950: #00233a; --navy-900: #002f4d; --navy-800: #003d63; --navy-500: #3fb4ea;
+    --bg: #04121b; --surface: #0b2131; --sunken: #071a27; --line: #173a52; --line-strong: #24546f;
+    --fg: #eef7fc; --fg-2: #c1dbe8; --muted: #85a7ba;
+    --brand: #005480; --brand-2: #0077ad; --on-brand-muted: #d3eefa;
+    --chip-on-bg: #00a0e5; --chip-on-fg: #001b2a; --ok: #4cc48a; --note-bg: #2a2412; --note-line: #c98a16;
+    --focus: 0 0 0 3px rgba(0, 160, 229, .5);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, .4); --shadow-md: 0 6px 16px rgba(0, 0, 0, .4); --shadow-lg: 0 16px 40px rgba(0, 0, 0, .5);
+    color-scheme: dark;
+  }
   body { transition: background-color .25s ease; }
 
   *, *::before, *::after { box-sizing: border-box; }
