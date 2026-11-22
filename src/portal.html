@@ -577,6 +577,9 @@
   .copy:hover { background: var(--bg); border-color: var(--fg-2); }
   .copy svg { width: 15px; height: 15px; }
   .copy.done { background: var(--ok); border-color: var(--ok); color: #ffffff; }
+  .pick-hint { padding: 40px 28px; text-align: center; border: 1px dashed var(--line-strong); border-radius: var(--r-lg); display: grid; gap: 8px; justify-items: center; }
+  .pick-hint h2 { font-family: var(--display); font-weight: 700; font-size: 30px; line-height: 1.05; }
+  .pick-hint p:last-child { max-width: 52ch; color: var(--muted); }
   .empty { padding: 40px 24px; text-align: center; border: 1px dashed var(--line-strong); border-radius: var(--r-lg); color: var(--muted); }
 
   footer { border-top: 1px solid var(--line); padding-block: 20px 32px; font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 24px; }
@@ -697,7 +700,6 @@
   "use strict";
   var DATA = JSON.parse(document.getElementById("payload").textContent);
   var SS_KEY = "iconyx-lojista-sessao";
-  var LS_CLUB = "iconyx-lojista-clube";
   var enc = new TextEncoder(), dec = new TextDecoder();
   var $ = function (id) { return document.getElementById(id); };
 
@@ -840,7 +842,11 @@
 
   function renderClub() {
     var c = current, el = $("club");
-    if (!c) { el.innerHTML = '<div class="empty">Nenhum clube disponível ainda.</div>'; return; }
+    if (!c) {
+      el.innerHTML = '<div class="pick-hint"><p class="eyebrow">Linha futebol ICONYX</p><h2>Escolha um clube</h2>' +
+        "<p>Selecione um dos " + CONTENT.clubes.length + " clubes acima para ver as imagens dos produtos, os banners e as descrições prontas para copiar.</p></div>";
+      return;
+    }
     var prods = c.produtos || [];
     var res = resources(c);
     var nRes = res.filter(function (r) { return r.url; }).length;
@@ -878,15 +884,12 @@
   }
 
   function select(id, push) {
-    var c = CONTENT.clubes.filter(function (x) { return x.id === id; })[0] || CONTENT.clubes[0] || null;
+    var c = id ? CONTENT.clubes.filter(function (x) { return x.id === id; })[0] || null : null;
     current = c;
     if (c && c.paleta) document.documentElement.setAttribute("data-paleta", c.paleta);
     else document.documentElement.removeAttribute("data-paleta");
     renderChips(); renderClub(); renderAll();
-    if (c) {
-      try { localStorage.setItem(LS_CLUB, c.id); } catch (e) {}
-      if (push && location.hash !== "#" + c.id) { try { history.replaceState(null, "", "#" + c.id); } catch (e) { location.hash = c.id; } }
-    }
+    if (push) { try { history.replaceState(null, "", c ? "#" + c.id : location.pathname + location.search); } catch (e) {} }
   }
 
   /* ---------- Copiar ---------- */
@@ -925,7 +928,7 @@
 
   document.addEventListener("click", function (ev) {
     var chip = ev.target.closest(".chip");
-    if (chip) { select(chip.getAttribute("data-id"), true); return; }
+    if (chip) { var cid = chip.getAttribute("data-id"); select(current && current.id === cid ? null : cid, true); return; }
     var ab = ev.target.closest("[data-copy-about]");
     if (ab && CONTENT && CONTENT.marca) {
       copyText(CONTENT.marca.texto, ab, $("aboutText"));
@@ -944,7 +947,7 @@
   });
   window.addEventListener("hashchange", function () {
     var id = location.hash.slice(1);
-    if (CONTENT && id && (!current || id !== current.id)) select(id, false);
+    if (CONTENT && (current ? current.id : "") !== id) select(id || null, false);
   });
   $("logoutBtn").addEventListener("click", function () {
     clearSession();
@@ -974,9 +977,7 @@
     renderAbout();
     $("whoName").textContent = session.nome || "lojista";
     $("updated").textContent = content.atualizadoEm ? "Textos atualizados em " + fmtDate(content.atualizadoEm) : "";
-    var want = location.hash.slice(1);
-    if (!want) { try { want = localStorage.getItem(LS_CLUB) || ""; } catch (e) {} }
-    select(want, false);
+    select(null, true);
     $("gate").hidden = true; $("app").hidden = false;
     window.scrollTo(0, 0);
   }
