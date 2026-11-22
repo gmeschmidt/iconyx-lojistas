@@ -473,10 +473,10 @@
     box-shadow: var(--shadow-sm); padding: 20px 22px;
   }
   .res .ico {
-    width: 48px; height: 48px; border-radius: 12px; display: grid; place-items: center;
+    width: 92px; height: 92px; border-radius: 14px; display: grid; place-items: center; border: 1px solid var(--line);
     background: var(--note-bg); color: var(--accent-hover);
   }
-  .res .ico svg { width: 24px; height: 24px; }
+  .res .ico svg { width: 36px; height: 36px; }
   .res .thumb {
     width: 92px; height: 92px; border-radius: 14px; overflow: hidden; display: grid; place-items: center;
     background: radial-gradient(circle at 50% 40%, var(--surface), var(--sunken) 75%); border: 1px solid var(--line);
@@ -797,6 +797,8 @@
   var ICON_IMG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5.2-5.2a1.5 1.5 0 0 0-2.1 0L5 19.5"/></svg>';
   var ICON_FILE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>';
 
+  var ICON_BANNER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M6 10h7M6 13.5h4"/><path d="M16 10.5l2.5 3"/></svg>';
+
   function renderAll() {
     var d = CONTENT.workdrive || {}, a = $("allLink");
     if (d.url) { a.href = d.url; a.innerHTML = "Ver imagens de todos os clubes" + ICON_OUT; a.hidden = false; }
@@ -810,7 +812,7 @@
   }
   function resCard(r) {
     var vis = r.imagem ? '<div class="thumb"><img src="' + esc(r.imagem) + '" alt=""></div>'
-      : '<div class="ico">' + (r.tipo === "pasta" ? ICON_FILE : ICON_IMG) + "</div>";
+      : '<div class="ico">' + (r.tipo === "banners" ? ICON_BANNER : r.tipo === "pasta" ? ICON_FILE : ICON_IMG) + "</div>";
     return '<article class="res">' + vis +
       "<div><h4>" + esc(r.titulo) + "</h4>" + (r.descricao ? "<p>" + esc(r.descricao) + "</p>" : "") +
       (r.tags && r.tags.length ? '<div class="tags">' + r.tags.map(function (t) { return "<span>" + esc(t) + "</span>"; }).join("") + "</div>" : "") +
@@ -844,7 +846,7 @@
       '<div class="club-head"><div class="club-id">' +
       (c.escudo ? '<span class="crest"><img src="' + esc(c.escudo) + '" alt="Escudo do ' + esc(c.nome) + '"></span>' : "") +
       "<div>" + (c.escudo ? "" : swatch(c.cores, "stripe")) + "<h2>" + esc(c.nome) + "</h2>" +
-      '<p class="meta"><b>' + prods.length + (prods.length === 1 ? " produto" : " produtos") + "</b> · " + (nRes ? nRes + (nRes === 1 ? " pasta de imagens" : " pastas de imagens") : "imagens em preparação") + "</p></div></div></div>";
+      '<p class="meta"><b>' + prods.length + (prods.length === 1 ? " produto" : " produtos") + "</b> · " + (nRes ? nRes + (nRes === 1 ? " pasta de materiais" : " pastas de materiais") : "materiais em preparação") + "</p></div></div></div>";
     html += '<section class="sec" aria-labelledby="secRes"><div class="sec-head"><h3 id="secRes">Imagens e materiais</h3>' +
       "<p>Arquivos oficiais da linha " + esc(c.nome) + " ICONYX para baixar e usar na sua loja</p></div>" +
       (res.length ? '<div class="res-list">' + res.map(resCard).join("") + "</div>"
