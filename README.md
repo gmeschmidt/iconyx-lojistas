@@ -16,4 +16,4 @@ node tools/portal.mjs import                                   # cifra o conteud
 node tools/portal.mjs build                                    # gera dist/index.html
 ```
 
-`dist/index.html` é o arquivo publicado como Artifact.
+`dist/index.html` é o arquivo publicado como Artifact. `public/` é a versão para hospedagem estática (Vercel): o `build` também gera `public/index.html`, e o `vercel.json` aponta para essa pasta, sem etapa de build.

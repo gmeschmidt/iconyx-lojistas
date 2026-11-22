@@ -148,6 +148,28 @@ async function main() {
       mkdirSync(P("dist"), { recursive: true });
       writeFileSync(P("dist", "index.html"), html);
       console.log("dist/index.html gerado (" + Math.round(html.length / 1024) + " KB)");
+      // Versão independente (Vercel ou qualquer hospedagem estática): documento HTML completo.
+      const cut = html.indexOf("</style>") + "</style>".length;
+      const site = [
+        "<!doctype html>",
+        '<html lang="pt-BR">',
+        "<head>",
+        '<meta charset="utf-8">',
+        '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">',
+        '<meta name="robots" content="noindex, nofollow">',
+        '<link rel="icon" type="image/png" href="favicon.png">',
+        "<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>",
+        html.slice(0, cut),
+        "</head>",
+        "<body>",
+        html.slice(cut),
+        "</body>",
+        "</html>",
+        "",
+      ].join("\n");
+      mkdirSync(P("public"), { recursive: true });
+      writeFileSync(P("public", "index.html"), site);
+      console.log("public/index.html gerado para hospedagem estática");
       break;
     }
     default:
