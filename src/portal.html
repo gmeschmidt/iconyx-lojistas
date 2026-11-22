@@ -452,7 +452,8 @@
   .about-side { display: flex; flex-direction: column; gap: 18px; align-items: flex-start; }
   .about-text { display: grid; gap: 12px; color: var(--fg-2); font-size: 16px; line-height: 1.65; max-width: 68ch; }
   .about-text p:first-child { color: var(--fg); font-weight: 500; }
-  .logos { display: grid; gap: 8px; justify-items: start; }
+  .logos { display: grid; gap: 16px; justify-items: start; }
+  .mat { display: grid; gap: 6px; justify-items: start; }
   .logos small { font-size: 13px; color: var(--muted); max-width: 34ch; line-height: 1.45; }
   .about-main { display: flex; flex-direction: column; gap: 18px; align-items: flex-start; min-width: 0; }
   .about-main .btn { padding: 9px 14px; font-size: 13px; }
@@ -964,11 +965,11 @@
     $("aboutTitle").textContent = m.titulo || "Sobre a ICONYX";
     $("aboutText").innerHTML = m.texto.split(/\n\s*\n/).map(function (t) { return "<p>" + esc(t) + "</p>"; }).join("");
     $("aboutCopy").innerHTML = ICON_COPY + "Copiar texto";
-    var lg = m.logos, le = $("aboutLogos");
-    if (lg && lg.url) {
-      le.innerHTML = linkBtn(lg.url, lg.botao || "Abrir logos da ICONYX", true) + (lg.descricao ? "<small>" + esc(lg.descricao) + "</small>" : "");
-      le.hidden = false;
-    } else le.hidden = true;
+    var mats = (m.materiais || (m.logos ? [m.logos] : [])).filter(function (x) { return x && x.url; }), le = $("aboutLogos");
+    le.innerHTML = mats.map(function (x) {
+      return '<div class="mat">' + linkBtn(x.url, x.botao || "Abrir materiais", true) + (x.descricao ? "<small>" + esc(x.descricao) + "</small>" : "") + "</div>";
+    }).join("");
+    le.hidden = !mats.length;
     sec.hidden = false;
   }
 
