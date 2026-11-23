@@ -479,7 +479,8 @@
   }
   .res .ico svg { width: 36px; height: 36px; }
   .res .ico--banner { background: var(--brand); border-color: var(--line); color: #ffffff; }
-  .res .ico--banner svg { width: 56px; height: auto; }
+  .res .ico--banner svg { width: 44px; height: 44px; }
+  .res .ico--banner svg[viewBox="0 0 624.24 312.42"] { width: 56px; height: auto; }
   .res .thumb {
     width: 92px; height: 92px; border-radius: 14px; overflow: hidden; display: grid; place-items: center;
     background: radial-gradient(circle at 50% 40%, var(--surface), var(--sunken) 75%); border: 1px solid var(--line);
@@ -802,6 +803,7 @@
   var ICON_IMG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5.2-5.2a1.5 1.5 0 0 0-2.1 0L5 19.5"/></svg>';
   var ICON_FILE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>';
 
+  var ICON_BOX = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 7.5L12 3 3 7.5v9L12 21l9-4.5z"/><path d="M3 7.5L12 12l9-4.5M12 12v9"/><path d="M7.5 5.25l9 4.5"/></svg>';
   var ICON_BANNER = '<svg viewBox="0 0 624.24 312.42" fill="currentColor" aria-hidden="true"><path d="M609.42,312.42H17.96c-9.12-.01-17.95-4.36-17.95-14.61V13.65C0,7.62,5.02,0,11.61,0h601c7.2,0,11.63,8.38,11.63,14.62l-.02,283.18C624.22,305.97,617.93,311.35,609.42,312.42ZM596.11,284.53l-.02-257.01H28.16s-.06,257.01-.06,257.01h568.01Z"/><polygon points="186.6 87.39 186.33 87.39 186.33 70.69 181.21 65.12 150.46 65.12 145.33 70.69 145.33 87.39 126.78 87.39 126.78 70.69 121.65 65.12 90.9 65.12 85.78 70.69 85.78 87.39 85.74 87.39 68.93 105.66 68.93 233.5 91.03 233.5 102.55 233.5 169.79 233.5 179.02 233.5 203.41 233.5 203.41 105.66 186.6 87.39"/><rect x="227.36" y="67.83" width="343.97" height="19.59"/><rect x="227.36" y="107.02" width="343.97" height="19.59"/><rect x="227.36" y="146.2" width="343.97" height="19.59"/><rect x="227.36" y="185.39" width="343.97" height="19.59"/><rect x="227.36" y="224.58" width="343.97" height="19.59"/></svg>';
 
   function renderAll() {
@@ -817,7 +819,8 @@
   }
   function resCard(r) {
     var vis = r.imagem ? '<div class="thumb"><img src="' + esc(r.imagem) + '" alt=""></div>'
-      : '<div class="ico' + (r.tipo === "banners" ? ' ico--banner" style="background:' + esc((current.cores || [])[0] || "") : "") + '">' + (r.tipo === "banners" ? ICON_BANNER : r.tipo === "pasta" ? ICON_FILE : ICON_IMG) + "</div>";
+      : '<div class="ico ico--banner" style="background:' + esc((current.cores || [])[0] || "") + '">' +
+        (r.tipo === "banners" ? ICON_BANNER : r.tipo === "embalagens" ? ICON_BOX : r.tipo === "pasta" ? ICON_FILE : ICON_IMG) + "</div>";
     return '<article class="res">' + vis +
       "<div><h4>" + esc(r.titulo) + "</h4>" + (r.descricao ? "<p>" + esc(r.descricao) + "</p>" : "") +
       (r.tags && r.tags.length ? '<div class="tags">' + r.tags.map(function (t) { return "<span>" + esc(t) + "</span>"; }).join("") + "</div>" : "") +
