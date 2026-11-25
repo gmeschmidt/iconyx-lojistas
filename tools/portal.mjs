@@ -144,7 +144,8 @@ async function main() {
       const tpl = readFileSync(P("src", "portal.html"), "utf8");
       const logo = "data:image/png;base64," + readFileSync(P("src", "logo.png")).toString("base64");
       const payload = JSON.stringify({ acessos: loadAcessos(), conteudo: readJSON(CONTEUDO), idSalt: ID_SALT });
-      const html = tpl.replaceAll("__LOGO__", logo).replace("__PAYLOAD__", () => payload.replace(/</g, "\\u003c"));
+      const logoDark = "data:image/png;base64," + readFileSync(P("src", "logo-dark.png")).toString("base64");
+      const html = tpl.replaceAll("__LOGO_DARK__", logoDark).replaceAll("__LOGO__", logo).replace("__PAYLOAD__", () => payload.replace(/</g, "\\u003c"));
       mkdirSync(P("dist"), { recursive: true });
       writeFileSync(P("dist", "index.html"), html);
       console.log("dist/index.html gerado (" + Math.round(html.length / 1024) + " KB)");
