@@ -111,10 +111,13 @@
   .sec-head h2 { font-size: 22px; line-height: 1.1; }
 
   .about { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+  .about-col { display: grid; gap: 16px; min-width: 0; }
+  .about-col h3 { font-size: clamp(24px, 2.8vw, 32px); line-height: 1; }
+  .copybox { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--ink); padding: 20px 22px 22px; display: grid; gap: 14px; }
+  .copybox > .label { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; padding-bottom: 12px; border-bottom: 1px dashed var(--line); }
   .about-text { display: grid; gap: 12px; max-width: 66ch; }
-  .about-text h3 { font-size: clamp(24px, 2.8vw, 32px); line-height: 1; margin-bottom: 4px; }
   .about-text p:first-of-type { color: var(--ink); font-weight: 500; }
-  .about-text .btn { justify-self: start; margin-top: 6px; }
+  .copybox .btn { justify-self: start; }
 
   /* Blocos para baixar */
   .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 14px; }
@@ -125,6 +128,7 @@
   .tile .pic img { position: absolute; inset: 18px; width: calc(100% - 36px); height: calc(100% - 36px); object-fit: contain; filter: drop-shadow(0 10px 12px rgba(0, 0, 0, .18)); }
   .tile .pic.ico { background: var(--club); color: var(--on-club); }
   .tile .pic.ico svg { width: 30%; height: auto; }
+  .tile .pic.ico svg[viewBox="0 0 757.32 948.15"] { width: auto; height: 42%; }
   .tile .pic.ico.brand { background: #121c47; color: #ffffff; }
   .tile .meta { padding: 14px 16px 16px; display: grid; gap: 4px; align-content: start; }
   .tile .meta b { display: flex; justify-content: space-between; gap: 10px; font-weight: 600; font-size: 15px; color: var(--ink); }
@@ -251,10 +255,13 @@
     <section class="sec" id="about" aria-labelledby="aboutHead" hidden>
       <div class="sec-head"><h2 class="wide" id="aboutHead">Sobre a marca</h2><span class="label">Textos e arquivos da ICONYX</span></div>
       <div class="about">
-        <div class="about-text">
+        <div class="about-col">
           <h3 class="wide" id="aboutTitle"></h3>
-          <div class="about-text" id="aboutText"></div>
-          <button class="btn btn--line" type="button" id="aboutCopy" data-copy-about>Copiar texto</button>
+          <div class="copybox">
+            <p class="label"><span>Texto institucional · pronto para copiar</span><span id="aboutCount"></span></p>
+            <div class="about-text" id="aboutText"></div>
+            <button class="btn btn--ink" type="button" id="aboutCopy" data-copy-about>Copiar texto</button>
+          </div>
         </div>
         <div class="tiles" id="aboutTiles"></div>
       </div>
@@ -290,7 +297,7 @@
   var ICON_BOX = '<svg viewBox="0 0 1737.06 1397.8" fill="currentColor" aria-hidden="true"><path d="M1706.79,1397.8H29.91c-15.64,0-29.88-12.19-29.88-28.25L0,384.91c0-12.42,9.09-15.07,15.37-22.47l120.27-141.54c6.57-7.33,14.62-11.95,25.27-11.95l337.7.02C608.56,7.93,866.88-52.96,1068.01,47.72c70.2,36.4,129.81,90.22,167.82,161.18l341.83.12c7.81,0,16.91,4.05,21.69,9.68l122.04,143.74c5.97,7.04,15.67,10.62,15.67,22.43l-.07,986.6C1736.99,1386.71,1720.79,1397.8,1706.79,1397.8ZM1026.2,180.94c47.4,26.08,85.44,61.06,112.51,106.63l65.29-.21c-15.07-42.79-37.35-77.91-66.75-110.3-112.81-119.8-295.14-144.99-441.84-73.9-76.3,38.33-136.22,101.6-164.63,184.12l65.96.27C682.73,142.24,878.53,102.51,1026.2,180.94ZM373.96,375.17l1275.62-.08-91.97-108.69-296.28.07,5.51,20.46c16.07.45,26.69,12.39,27.83,27.49,1,13.19-9.2,29.71-25.28,29.73l-183.04.25c-12.52.02-22.5-9.49-25.82-18.42-4.64-12.48-1.28-24.09,9.37-33.24-73.11-88.01-202.33-113.13-307.55-70.59-38.11,15.41-70.77,37.69-96.4,69.21,11.28,7.73,15.31,20.27,11.81,32.82-3.09,11.06-13.98,20.26-27.42,20.26l-181.17-.09c-15.81,0-26.64-14.72-26.75-28.14-.11-14.73,9.85-26.9,25.19-29.45l5.74-20.35-294.62.1-92.18,108.68h287.41ZM1673.3,1334l-.14-894.82-1608.65.27.1,894.86L1673.3,1334Z"/><polygon points="1091.72 628.9 1090.48 628.9 1090.48 559.39 1067.36 536.21 928.63 536.21 905.48 559.38 905.48 628.9 821.73 628.9 821.73 559.38 798.61 536.21 659.89 536.21 636.77 559.38 636.77 628.9 636.56 628.9 560.7 704.93 560.7 1237.13 660.48 1237.13 712.43 1237.13 1015.86 1237.13 1057.52 1237.13 1167.59 1237.13 1167.58 704.94 1091.72 628.9"/></svg>';
   var ICON_BANNER = '<svg viewBox="0 0 624.24 312.42" fill="currentColor" aria-hidden="true"><path d="M609.42,312.42H17.96c-9.12-.01-17.95-4.36-17.95-14.61V13.65C0,7.62,5.02,0,11.61,0h601c7.2,0,11.63,8.38,11.63,14.62l-.02,283.18C624.22,305.97,617.93,311.35,609.42,312.42ZM596.11,284.53l-.02-257.01H28.16s-.06,257.01-.06,257.01h568.01Z"/><polygon points="186.6 87.39 186.33 87.39 186.33 70.69 181.21 65.12 150.46 65.12 145.33 70.69 145.33 87.39 126.78 87.39 126.78 70.69 121.65 65.12 90.9 65.12 85.78 70.69 85.78 87.39 85.74 87.39 68.93 105.66 68.93 233.5 91.03 233.5 102.55 233.5 169.79 233.5 179.02 233.5 203.41 233.5 203.41 105.66 186.6 87.39"/><rect x="227.36" y="67.83" width="343.97" height="19.59"/><rect x="227.36" y="107.02" width="343.97" height="19.59"/><rect x="227.36" y="146.2" width="343.97" height="19.59"/><rect x="227.36" y="185.39" width="343.97" height="19.59"/><rect x="227.36" y="224.58" width="343.97" height="19.59"/></svg>';
   var ICON_PLAY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2"/><path d="M10.5 9.5v5l4-2.5z" fill="currentColor"/></svg>';
-  var ICON_LOGO = '<svg viewBox="0 0 30 32" fill="currentColor" aria-hidden="true"><path d="M0 6h9V0h4v6h4V0h4v6h9v26H0z"/></svg>';
+  var ICON_LOGO = '<svg viewBox="0 0 757.32 948.15" aria-hidden="true"><polygon fill="#f8bb01" points="662.66 125.4 661.12 125.4 661.12 31.35 632.27 0 459.12 0 430.27 31.35 430.27 125.4 325.76 125.4 325.76 31.35 296.91 0 123.76 0 94.9 31.35 94.9 125.4 94.66 125.4 0 228.24 0 948.15 124.49 948.15 189.33 948.15 567.99 948.15 619.97 948.15 757.32 948.15 757.32 228.24 662.66 125.4"/></svg>';
   var ICON_IMG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5.2-5.2a1.5 1.5 0 0 0-2.1 0L5 19.5"/></svg>';
 
   /* ---------- Cripto (mesmo esquema de tools/portal.mjs) ---------- */
@@ -400,6 +407,7 @@
     $("aboutTitle").textContent = m.titulo || "Sobre a ICONYX";
     $("aboutText").innerHTML = m.texto.split(/\n\s*\n/).map(function (t) { return "<p>" + esc(t) + "</p>"; }).join("");
     $("aboutCopy").innerHTML = ICON_COPY + "Copiar texto";
+    $("aboutCount").textContent = num(m.texto.length) + " caracteres";
     $("aboutTiles").innerHTML = (m.materiais || []).filter(function (x) { return x && x.url; }).map(function (x) {
       var tipo = /v[ií]deo/i.test(x.botao || "") ? "videos" : /logo/i.test(x.botao || "") ? "logos" : "pasta";
       var titulo = x.titulo || (tipo === "videos" ? "Vídeos verticais" : tipo === "logos" ? "Logos ICONYX" : "Materiais");
