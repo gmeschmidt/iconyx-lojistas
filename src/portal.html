@@ -500,7 +500,21 @@
     html += '<section class="sec" aria-labelledby="secTxt"><div class="sec-head"><h2 class="wide" id="secTxt">Descrições e fichas</h2><span class="label">' + prods.length + (prods.length === 1 ? " produto" : " produtos") + "</span></div>" +
       (prods.length ? '<div class="items">' + prods.map(itemHTML).join("") + "</div>" : '<div class="empty">Os textos deste clube estão em preparação.</div>') + "</section>";
     el.innerHTML = html;
-    if (m3d.length) loadViewer();
+    if (m3d.length) { loadViewer(); fixArtifactModels(); }
+  }
+  function fixArtifactModels() {
+    // No Artifact o .glb não é servido: carrega a cópia em JSON e entrega ao visualizador como blob.
+    document.querySelectorAll("model-viewer[data-src]").forEach(function (mv) {
+      var src = mv.getAttribute("data-src");
+      fetch(src, { method: "HEAD" }).then(function (r) {
+        if (r.ok && !/json|html/.test(r.headers.get("content-type") || "")) { mv.setAttribute("src", src); return; }
+        return fetch(src + ".json").then(function (r2) { return r2.json(); }).then(function (j) {
+          var bin = atob(j.glb), u8 = new Uint8Array(bin.length);
+          for (var k = 0; k < bin.length; k++) u8[k] = bin.charCodeAt(k);
+          mv.setAttribute("src", URL.createObjectURL(new Blob([u8], { type: "model/gltf-binary" })));
+        });
+      }).catch(function () { mv.setAttribute("src", src); });
+    });
   }
 
   /* ---------- 3D ---------- */
@@ -535,7 +549,7 @@
   function viewerHTML(p, i) {
     var m = p.modelo3d, base = publicBase();
     return '<article class="v3d" data-i="' + i + '">' +
-      '<div class="v3d-stage"><model-viewer src="' + esc(m.arquivo) + '" alt="' + esc(m.alt) + '" camera-controls touch-action="pan-y" auto-rotate auto-rotate-delay="1500" rotation-per-second="18deg" camera-orbit="25deg 75deg auto" shadow-intensity="1" environment-image="neutral" exposure="1" ar ar-modes="webxr scene-viewer quick-look" ar-placement="floor">' +
+      '<div class="v3d-stage"><model-viewer data-src="' + esc(m.arquivo) + '" alt="' + esc(m.alt) + '" camera-controls touch-action="pan-y" auto-rotate auto-rotate-delay="1500" rotation-per-second="18deg" camera-orbit="25deg 75deg auto" shadow-intensity="1" environment-image="neutral" exposure="1" ar ar-modes="webxr scene-viewer quick-look" ar-placement="floor">' +
       '<button slot="ar-button" class="ar-btn" style="background:' + esc(m.cor || "#111614") + '">Ver no seu espaço</button>' +
       '<div slot="progress-bar"></div></model-viewer><span class="v3d-hint label">Arraste para girar · pinça ou roda para aproximar</span></div>' +
       '<div class="body"><p class="label">' + esc(p.categoria || "") + '</p><h4 class="wide">' + esc(m.titulo) + "</h4>" +

@@ -16,7 +16,7 @@
 //   node tools/portal.mjs import [entrada.json]           cifra de novo o conteúdo editado
 //   node tools/portal.mjs build                           gera dist/index.html (não precisa de senha)
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -171,6 +171,15 @@ async function main() {
       mkdirSync(P("public"), { recursive: true });
       writeFileSync(P("public", "index.html"), site);
       console.log("public/index.html gerado para hospedagem estática");
+      // O Artifact não serve .glb: gera uma cópia em JSON (base64) só para a versão do Artifact.
+      const walk = (dir) => (existsSync(dir) ? readdirSync(dir, { withFileTypes: true }) : []).flatMap((e) => e.isDirectory() ? walk(join(dir, e.name)) : [join(dir, e.name)]);
+      for (const f of walk(P("public", "3d")).filter((f) => f.endsWith(".glb"))) {
+        const rel = f.slice(P("public").length + 1);
+        const out = P("dist", rel + ".json");
+        mkdirSync(dirname(out), { recursive: true });
+        writeFileSync(out, JSON.stringify({ glb: readFileSync(f).toString("base64") }));
+        console.log("dist/" + rel + ".json gerado");
+      }
       break;
     }
     default:
