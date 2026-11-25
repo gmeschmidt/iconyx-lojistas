@@ -179,6 +179,22 @@
   .v3d-stage { position: relative; background: radial-gradient(circle at 50% 40%, var(--surface), var(--plinth) 70%); min-height: 440px; }
   .v3d-stage model-viewer { width: 100%; height: 100%; min-height: 440px; background: transparent; --poster-color: transparent; }
   .v3d-hint { position: absolute; left: 14px; top: 12px; pointer-events: none; }
+  .fs-btn { position: absolute; right: 12px; top: 10px; z-index: 2; display: inline-flex; align-items: center; gap: 6px; appearance: none; cursor: pointer;
+    background: var(--surface); color: var(--ink); border: 1px solid var(--line); padding: 8px 10px; font: 500 11.5px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+  .fs-btn svg { width: 15px; height: 15px; }
+  .fs-btn:hover { border-color: var(--ink); }
+  .fs-btn:focus-visible { outline: none; box-shadow: var(--focus); }
+  .fs-title { display: none; }
+  /* Tela cheia: o palco 3D cobre a tela inteira (funciona também no iPhone, que não tem tela cheia de elemento). */
+  .v3d-stage.is-fs { position: fixed; inset: 0; z-index: 100; min-height: 0; height: 100%;
+    padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px); }
+  .v3d-stage.is-fs model-viewer { min-height: 0; height: 100%; }
+  .v3d-stage.is-fs .fs-btn { top: calc(10px + env(safe-area-inset-top, 0px)); right: calc(12px + env(safe-area-inset-right, 0px)); }
+  .v3d-stage.is-fs .v3d-hint { top: auto; bottom: calc(76px + env(safe-area-inset-bottom, 0px)); left: 16px; right: 16px; text-align: center; }
+  .v3d-stage.is-fs .fs-title { display: block; position: absolute; left: calc(16px + env(safe-area-inset-left, 0px)); top: calc(14px + env(safe-area-inset-top, 0px)); right: 140px;
+    margin: 0; font-family: var(--display); font-variation-settings: "wdth" 110; font-weight: 800; text-transform: uppercase; font-size: 16px; line-height: 1.15; color: var(--ink); pointer-events: none; }
+  .v3d-stage.is-fs .ar-btn { bottom: calc(20px + env(safe-area-inset-bottom, 0px)); }
+  body.fs-open { overflow: hidden; }
   .ar-btn { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); padding: 12px 20px; border: 0; border-radius: 24px; color: #fff; font: 600 14px var(--sans); cursor: pointer; }
   .v3d .body { padding: clamp(20px, 2.6vw, 30px); display: grid; gap: 14px; align-content: start; min-width: 0; }
   .v3d h4 { font-size: clamp(22px, 2.4vw, 28px); line-height: 1; }
@@ -378,6 +394,8 @@
   var ICON_OK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
   var ICON_BOX = '<svg viewBox="0 0 1737.06 1397.8" fill="currentColor" aria-hidden="true"><path d="M1706.79,1397.8H29.91c-15.64,0-29.88-12.19-29.88-28.25L0,384.91c0-12.42,9.09-15.07,15.37-22.47l120.27-141.54c6.57-7.33,14.62-11.95,25.27-11.95l337.7.02C608.56,7.93,866.88-52.96,1068.01,47.72c70.2,36.4,129.81,90.22,167.82,161.18l341.83.12c7.81,0,16.91,4.05,21.69,9.68l122.04,143.74c5.97,7.04,15.67,10.62,15.67,22.43l-.07,986.6C1736.99,1386.71,1720.79,1397.8,1706.79,1397.8ZM1026.2,180.94c47.4,26.08,85.44,61.06,112.51,106.63l65.29-.21c-15.07-42.79-37.35-77.91-66.75-110.3-112.81-119.8-295.14-144.99-441.84-73.9-76.3,38.33-136.22,101.6-164.63,184.12l65.96.27C682.73,142.24,878.53,102.51,1026.2,180.94ZM373.96,375.17l1275.62-.08-91.97-108.69-296.28.07,5.51,20.46c16.07.45,26.69,12.39,27.83,27.49,1,13.19-9.2,29.71-25.28,29.73l-183.04.25c-12.52.02-22.5-9.49-25.82-18.42-4.64-12.48-1.28-24.09,9.37-33.24-73.11-88.01-202.33-113.13-307.55-70.59-38.11,15.41-70.77,37.69-96.4,69.21,11.28,7.73,15.31,20.27,11.81,32.82-3.09,11.06-13.98,20.26-27.42,20.26l-181.17-.09c-15.81,0-26.64-14.72-26.75-28.14-.11-14.73,9.85-26.9,25.19-29.45l5.74-20.35-294.62.1-92.18,108.68h287.41ZM1673.3,1334l-.14-894.82-1608.65.27.1,894.86L1673.3,1334Z"/><polygon points="1091.72 628.9 1090.48 628.9 1090.48 559.39 1067.36 536.21 928.63 536.21 905.48 559.38 905.48 628.9 821.73 628.9 821.73 559.38 798.61 536.21 659.89 536.21 636.77 559.38 636.77 628.9 636.56 628.9 560.7 704.93 560.7 1237.13 660.48 1237.13 712.43 1237.13 1015.86 1237.13 1057.52 1237.13 1167.59 1237.13 1167.58 704.94 1091.72 628.9"/></svg>';
   var ICON_BANNER = '<svg viewBox="0 0 624.24 312.42" fill="currentColor" aria-hidden="true"><path d="M609.42,312.42H17.96c-9.12-.01-17.95-4.36-17.95-14.61V13.65C0,7.62,5.02,0,11.61,0h601c7.2,0,11.63,8.38,11.63,14.62l-.02,283.18C624.22,305.97,617.93,311.35,609.42,312.42ZM596.11,284.53l-.02-257.01H28.16s-.06,257.01-.06,257.01h568.01Z"/><polygon points="186.6 87.39 186.33 87.39 186.33 70.69 181.21 65.12 150.46 65.12 145.33 70.69 145.33 87.39 126.78 87.39 126.78 70.69 121.65 65.12 90.9 65.12 85.78 70.69 85.78 87.39 85.74 87.39 68.93 105.66 68.93 233.5 91.03 233.5 102.55 233.5 169.79 233.5 179.02 233.5 203.41 233.5 203.41 105.66 186.6 87.39"/><rect x="227.36" y="67.83" width="343.97" height="19.59"/><rect x="227.36" y="107.02" width="343.97" height="19.59"/><rect x="227.36" y="146.2" width="343.97" height="19.59"/><rect x="227.36" y="185.39" width="343.97" height="19.59"/><rect x="227.36" y="224.58" width="343.97" height="19.59"/></svg>';
+  var ICON_FS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
+  var ICON_FS_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>';
   var ICON_PLAY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2"/><path d="M10.5 9.5v5l4-2.5z" fill="currentColor"/></svg>';
   var ICON_LOGO = '<svg viewBox="0 0 757.32 948.15" aria-hidden="true"><polygon fill="#f8bb01" points="662.66 125.4 661.12 125.4 661.12 31.35 632.27 0 459.12 0 430.27 31.35 430.27 125.4 325.76 125.4 325.76 31.35 296.91 0 123.76 0 94.9 31.35 94.9 125.4 94.66 125.4 0 228.24 0 948.15 124.49 948.15 189.33 948.15 567.99 948.15 619.97 948.15 757.32 948.15 757.32 228.24 662.66 125.4"/></svg>';
   var ICON_IMG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5.2-5.2a1.5 1.5 0 0 0-2.1 0L5 19.5"/></svg>';
@@ -657,7 +675,9 @@
     return '<article class="v3d" data-i="' + i + '">' +
       '<div class="v3d-stage"><model-viewer data-src="' + esc(m.arquivo) + '" alt="' + esc(m.alt) + '" camera-controls touch-action="pan-y" auto-rotate auto-rotate-delay="1500" rotation-per-second="18deg" camera-orbit="25deg 75deg auto" shadow-intensity="1" environment-image="neutral" exposure="1" ar ar-modes="webxr scene-viewer quick-look" ar-placement="floor">' +
       '<button slot="ar-button" class="ar-btn" style="background:' + esc(m.cor || "#111614") + '">Ver no seu espaço</button>' +
-      '<div slot="progress-bar"></div></model-viewer><span class="v3d-hint label">Arraste para girar · pinça ou roda para aproximar</span></div>' +
+      '<div slot="progress-bar"></div></model-viewer><span class="v3d-hint label">Arraste para girar · pinça ou roda para aproximar</span>' +
+      '<button type="button" class="fs-btn" data-fs aria-label="Ver em tela cheia" title="Tela cheia">' + ICON_FS + '<span>Tela cheia</span></button>' +
+      '<p class="fs-title" aria-hidden="true">' + esc(m.titulo) + "</p></div>" +
       '<div class="body"><p class="label">' + esc(p.categoria || "") + '</p><h4 class="wide">' + esc(m.titulo) + "</h4>" +
       "<p>A caixa em 3D gira com o mouse ou o dedo e, no celular, pode ser vista em realidade aumentada pelo botão <b>Ver no seu espaço</b>. " + (base ? "Cole o código abaixo num bloco de HTML personalizado da página do produto no seu site. O arquivo fica hospedado pela ICONYX, então você não precisa enviar nada." : "Em breve você poderá copiar um código pronto para colocar esta caixa em 3D na página do produto no seu site.") + "</p>" +
       (base
@@ -715,10 +735,13 @@
   document.addEventListener("click", function (ev) {
     var cb = ev.target.closest(".club");
     if (cb) { var cid = cb.getAttribute("data-id"); select(current && current.id === cid ? null : cid, true); return; }
+    var fb = ev.target.closest("[data-fs]");
+    if (fb) { toggleFs(fb.closest(".v3d-stage")); return; }
     var tb = ev.target.closest("[data-v3d]");
     if (tb && current) {
       var pi = +tb.getAttribute("data-v3d");
       document.querySelectorAll("[data-v3d]").forEach(function (x) { x.setAttribute("aria-selected", String(x === tb)); });
+      if (fsStage) setFs(fsStage, false);
       $("v3dWrap").innerHTML = viewerHTML(current.produtos[pi], pi);
       fixArtifactModels();
       return;
@@ -753,6 +776,26 @@
     $("gate").hidden = true; $("app").hidden = false;
     window.scrollTo(0, 0);
   }
+
+  /* ---------- Tela cheia do 3D ---------- */
+  var fsStage = null;
+  function toggleFs(stage) {
+    var on = fsStage !== stage;
+    if (fsStage) setFs(fsStage, false);
+    if (on) setFs(stage, true);
+  }
+  function setFs(stage, on) {
+    stage.classList.toggle("is-fs", on);
+    document.body.classList.toggle("fs-open", on);
+    var mv = stage.querySelector("model-viewer"), b = stage.querySelector("[data-fs]");
+    // Em tela cheia, arrastar gira a caixa em qualquer direção; fora dela, o arrasto vertical continua rolando a página.
+    if (mv) mv.setAttribute("touch-action", on ? "none" : "pan-y");
+    b.innerHTML = (on ? ICON_FS_OFF : ICON_FS) + "<span>" + (on ? "Fechar" : "Tela cheia") + "</span>";
+    b.setAttribute("aria-label", on ? "Sair da tela cheia" : "Ver em tela cheia");
+    fsStage = on ? stage : null;
+    if (on) b.focus();
+  }
+  document.addEventListener("keydown", function (ev) { if (ev.key === "Escape" && fsStage) setFs(fsStage, false); });
 
   /* ---------- Painel de acessos (só admin) ---------- */
   var ADM = null; // { users: [ { e, info, orig, novaSenha?, removido?, novo? } ], clubesInfo: [ {id,nome,escudo} ] }
