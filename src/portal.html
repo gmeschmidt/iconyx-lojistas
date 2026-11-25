@@ -185,6 +185,10 @@
   .v3d .body > p:not(.label) { font-size: 15px; line-height: 1.65; }
   .v3d b { color: var(--ink); font-weight: 600; }
   pre.code { margin: 0; max-height: 180px; overflow: auto; background: var(--bg); border: 1px solid var(--line); padding: 12px 14px; font: 400 11.5px/1.55 var(--mono); color: var(--ink-2); white-space: pre; }
+  .vid { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 14px; align-items: center; border-top: 1px solid var(--line); padding-top: 14px; }
+  .vid video { width: 120px; height: 120px; object-fit: cover; background: #ffffff; border: 1px solid var(--line); }
+  .vid > div { display: grid; gap: 6px; justify-items: start; min-width: 0; }
+  .vid p:not(.label) { font-size: 14px; }
   .note3d { border: 1px dashed var(--line); padding: 12px 14px; color: var(--mute); font-size: 14px; }
   .pick-hint { padding: 48px 24px; text-align: center; border: 1px dashed var(--line); display: grid; gap: 8px; justify-items: center; }
   .pick-hint h3 { font-size: 28px; line-height: 1; }
@@ -560,6 +564,9 @@
           '<a class="btn btn--line" href="' + esc(base + m.arquivo) + '" target="_blank" rel="noopener noreferrer">Baixar arquivo 3D (.glb)</a></div>'
         : '<p class="note3d">O código para incorporar aparece aqui assim que o portal estiver no endereço definitivo.</p>') +
       '<p class="label">Funciona em sites que aceitam HTML personalizado. Marketplaces como Mercado Livre e Amazon não aceitam.</p>' +
+      (m.video ? '<div class="vid"><video src="' + esc(m.video) + '" muted loop playsinline autoplay preload="metadata" aria-label="Vídeo da caixa girando"></video>' +
+        '<div><p class="label">Vídeo da caixa girando · MP4 1080×1080</p><p>Para marketplaces, anúncios e redes sociais, onde não dá para usar o 3D.</p>' +
+        '<a class="btn btn--line" href="' + esc(m.video) + '" target="_blank" rel="noopener noreferrer">Abrir vídeo (MP4)</a></div></div>' : "") +
       "</div></article>";
   }
   function select(id, scroll) {
