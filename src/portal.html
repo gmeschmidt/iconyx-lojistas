@@ -195,6 +195,37 @@
   .ptab[aria-selected="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
   .ptab:focus-visible { outline: none; box-shadow: var(--focus); }
   .note3d { border: 1px dashed var(--line); padding: 12px 14px; color: var(--mute); font-size: 14px; }
+  .panel { padding-bottom: 8px; }
+  .panel-intro { max-width: 70ch; font-size: 15px; }
+  .panel-intro b, .phelp b { color: var(--ink); }
+  .pmsg { border: 1px solid var(--line); border-left: 4px solid #1c7a4a; background: var(--surface); padding: 12px 16px; font-size: 14.5px; white-space: pre-line; }
+  .pmsg.err { border-left-color: #c0362c; }
+  .pmsg code { font: 500 14px var(--mono); color: var(--ink); background: var(--plinth); padding: 1px 6px; }
+  .plist { display: grid; gap: 10px; }
+  .prow { background: var(--surface); border: 1px solid var(--line); padding: 16px 18px; display: grid; gap: 12px; }
+  .prow.off { opacity: .72; }
+  .prow.dirty { border-color: var(--ink); }
+  .prow-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 16px; }
+  .prow-top b { color: var(--ink); font-size: 16px; }
+  .prow-top .label { margin-left: 8px; }
+  .prow .acts .btn { padding: 8px 12px; font-size: 12.5px; }
+  .pill { font: 500 11px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; padding: 5px 8px; border: 1px solid; }
+  .pill.on { color: #1c7a4a; border-color: #1c7a4a; }
+  .pill.off { color: #c0362c; border-color: #c0362c; }
+  .pill.adm { color: var(--mute); border-color: var(--line); }
+  .pclubs { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pclub { appearance: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font: 500 12px/1 var(--sans); color: var(--ink); background: var(--bg); border: 1px solid var(--line); padding: 7px 10px 7px 7px; }
+  .pclub img { width: 18px; height: 18px; object-fit: contain; }
+  .pclub[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .pclub.all { padding-left: 10px; font-family: var(--mono); text-transform: uppercase; letter-spacing: .06em; font-size: 11px; }
+  .pclub:focus-visible { outline: none; box-shadow: var(--focus); }
+  .pnew, .ppub { background: var(--surface); border: 1px dashed var(--line); padding: 16px 18px; display: grid; gap: 12px; }
+  .pnew-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .ppub-row { display: flex; flex-wrap: wrap; align-items: end; gap: 12px 20px; }
+  .ppub-row .field { flex: 1 1 280px; }
+  .phelp p { font-size: 14px; margin-top: 8px; max-width: 75ch; }
+  .phelp summary { cursor: pointer; }
+  @media (max-width: 760px) { .pnew-row { grid-template-columns: minmax(0, 1fr); } }
   .pick-hint { padding: 48px 24px; text-align: center; border: 1px dashed var(--line); display: grid; gap: 8px; justify-items: center; }
   .pick-hint h3 { font-size: 28px; line-height: 1; }
   .pick-hint p:last-child { max-width: 52ch; color: var(--mute); }
@@ -263,7 +294,7 @@
   <header>
     <div class="wrap topbar">
       <div><img class="logo-dark" src="__LOGO_DARK__" alt="ICONYX"><img class="logo-light" src="__LOGO__" alt="ICONYX"></div>
-      <div class="who"><span class="nm">Lojista: <b id="whoName">lojista</b></span><button class="quiet" id="logoutBtn" type="button">Sair</button></div>
+      <div class="who"><span class="nm">Lojista: <b id="whoName">lojista</b></span><button class="quiet" id="adminBtn" type="button" hidden>Gerenciar acessos</button><button class="quiet" id="logoutBtn" type="button">Sair</button></div>
     </div>
     <div class="band" id="band" aria-hidden="true"></div>
     <div class="wrap">
@@ -276,6 +307,33 @@
   </header>
 
   <main class="wrap">
+    <section class="sec panel" id="panel" aria-labelledby="panelHead" hidden>
+      <div class="sec-head"><h2 class="wide" id="panelHead">Acessos de lojistas</h2><span class="label" id="panelCount"></span></div>
+      <p class="panel-intro">Ative ou desative cada loja e escolha quais clubes ela pode ver. As mudanças só valem para os lojistas depois de <b>Publicar alterações</b>. A publicação leva cerca de um minuto.</p>
+      <div id="panelMsg" class="pmsg" role="status" aria-live="polite" hidden></div>
+      <div id="panelList" class="plist"></div>
+      <form id="newForm" class="pnew" novalidate>
+        <p class="label">Novo lojista</p>
+        <div class="pnew-row">
+          <label class="field"><span>Nome da loja</span><input id="newNome" type="text" autocomplete="off" required></label>
+          <label class="field"><span>Usuário</span><input id="newUser" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" required></label>
+          <label class="field"><span>Senha (opcional)</span><input id="newPass" type="text" autocomplete="off" spellcheck="false" placeholder="Deixe vazio para gerar"></label>
+        </div>
+        <div class="pclubs" id="newClubes"></div>
+        <div class="acts"><button class="btn btn--ink" type="submit">Adicionar lojista</button></div>
+      </form>
+      <div class="ppub">
+        <div class="ppub-row">
+          <label class="field"><span>Token do GitHub</span><input id="ghToken" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…"></label>
+          <label class="remember"><input id="ghRemember" type="checkbox"> Lembrar neste navegador</label>
+        </div>
+        <div class="acts"><button class="btn btn--ink" type="button" id="pubBtn" disabled>Publicar alterações</button><button class="btn btn--line" type="button" id="discardBtn" disabled>Descartar</button><span class="label" id="pendCount"></span></div>
+        <details class="phelp"><summary class="label">Como gerar o token</summary>
+          <p>No GitHub: <b>Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token</b>. Em <b>Repository access</b>, escolha só <b>iconyx-lojistas</b>; em <b>Permissions → Contents</b>, marque <b>Read and write</b>. O token fica só neste navegador e é usado apenas para salvar a lista de acessos.</p>
+        </details>
+      </div>
+    </section>
+
     <section class="sec" id="about" aria-labelledby="aboutHead" hidden>
       <div class="sec-head"><h2 class="wide" id="aboutHead">Sobre a marca</h2><span class="label">Textos e arquivos da ICONYX</span></div>
       <div class="about">
@@ -326,28 +384,65 @@
 
   /* ---------- Cripto (mesmo esquema de tools/portal.mjs) ---------- */
   function unb64(s) { var bin = atob(s), u8 = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i); return u8; }
+  function b64(u8) { var s = ""; for (var i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); }
+  function rand(n) { return crypto.getRandomValues(new Uint8Array(n)); }
   function norm(u) { return String(u).trim().toLowerCase(); }
+  var ITERS = 250000;
   async function userId(u) {
     var h = await crypto.subtle.digest("SHA-256", enc.encode(DATA.idSalt + norm(u)));
     return Array.prototype.map.call(new Uint8Array(h), function (b) { return b.toString(16).padStart(2, "0"); }).join("");
   }
   async function passKey(u, p, salt, iters) {
     var base = await crypto.subtle.importKey("raw", enc.encode(norm(u) + "\n" + p), "PBKDF2", false, ["deriveKey"]);
-    return crypto.subtle.deriveKey({ name: "PBKDF2", salt: salt, iterations: iters, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+    return crypto.subtle.deriveKey({ name: "PBKDF2", salt: salt, iterations: iters || ITERS, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
   }
+  function rawKey(k) { return crypto.subtle.importKey("raw", unb64(k), "AES-GCM", false, ["encrypt", "decrypt"]); }
   async function openBox(key, box) {
+    if (typeof key === "string") key = await rawKey(key);
     var pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(box.iv) }, key, unb64(box.ct));
     return JSON.parse(dec.decode(pt));
   }
-  async function openContent(kRaw) {
-    var key = await crypto.subtle.importKey("raw", unb64(kRaw), "AES-GCM", false, ["decrypt"]);
-    return openBox(key, DATA.conteudo);
+  async function sealBox(key, obj) {
+    if (typeof key === "string") key = await rawKey(key);
+    var iv = rand(12);
+    var ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, enc.encode(JSON.stringify(obj)));
+    return { iv: b64(iv), ct: b64(new Uint8Array(ct)) };
   }
+  // Lista de acessos: no site, lê o acessos.json publicado (o painel de admin atualiza esse arquivo);
+  // no Artifact, usa a cópia embutida.
+  var ACESSOS = DATA.acessos;
+  function loadAcessos() {
+    return fetch("acessos.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) { if (j && j.entradas) ACESSOS = j; return ACESSOS; }, function () { return ACESSOS; });
+  }
+  function entryById(id) { return ACESSOS.entradas.filter(function (x) { return x.id === id; })[0] || null; }
+  // Abre o "comum" e só os clubes cujas chaves estão no grant.
+  async function loadContent(grant) {
+    var comum = await openBox(grant.k0, DATA.conteudo.comum);
+    var clubes = [];
+    for (var i = 0; i < DATA.conteudo.clubes.length; i++) {
+      var c = DATA.conteudo.clubes[i], k = grant.clubes[c.ref];
+      if (k) clubes.push(await openBox(k, c));
+    }
+    comum.clubes = clubes;
+    return comum;
+  }
+  // Resultado: { ok, sessao, conteudo } ou { erro }
   async function login(u, p) {
-    var id = await userId(u);
-    var e = DATA.acessos.entradas.filter(function (x) { return x.id === id; })[0];
-    if (!e) return null;
-    try { return await openBox(await passKey(u, p, unb64(e.salt), e.iters), e); } catch (err) { return null; }
+    await loadAcessos();
+    var id = await userId(u), e = entryById(id);
+    if (!e) return { erro: "Usuário ou senha incorretos. Confira e tente de novo." };
+    var r;
+    try { r = await openBox(await passKey(u, p, unb64(e.salt), e.iters), e); } catch (err) { return { erro: "Usuário ou senha incorretos. Confira e tente de novo." }; }
+    return entrar(Object.assign({ id: id }, r));
+  }
+  async function entrar(sess) {
+    var e = entryById(sess.id);
+    if (!e) return { erro: "Este acesso não existe mais. Fale com o seu contato comercial na ICONYX." };
+    if (!e.grant) return { erro: "Este acesso está desativado. Fale com o seu contato comercial na ICONYX." };
+    var g;
+    try { g = await openBox(sess.u, e.grant); } catch (err) { return { erro: "Este acesso mudou. Entre de novo com o seu usuário e a sua senha." }; }
+    return { sessao: sess, conteudo: await loadContent(g) };
   }
 
   /* ---------- Sessão ---------- */
@@ -379,12 +474,10 @@
     if (!uEl.value.trim() || !pEl.value) { fail("Preencha usuário e senha."); return; }
     btn.disabled = true; btn.textContent = "Verificando…";
     login(uEl.value, pEl.value).then(function (r) {
-      if (!r) { fail("Usuário ou senha incorretos. Confira e tente de novo."); return; }
-      return openContent(r.k).then(function (content) {
-        var s = { k: r.k, nome: r.nome };
-        saveSession(s, $("gateRemember").checked);
-        start(s, content);
-      });
+      if (r.erro) { fail(r.erro); return; }
+      // Admin: a sessão (com as chaves de administração) fica só nesta aba.
+      saveSession(r.sessao, r.sessao.papel === "admin" ? false : $("gateRemember").checked);
+      start(r.sessao, r.conteudo);
     }).catch(function () { fail("Não foi possível validar o acesso neste navegador. Tente de novo."); });
   });
   if (!window.crypto || !crypto.subtle) {
@@ -444,7 +537,7 @@
 
   /* ---------- Clubes ---------- */
   function renderClubs() {
-    $("clubsCount").textContent = CONTENT.clubes.length + " clubes licenciados";
+    $("clubsCount").textContent = CONTENT.clubes.length + (CONTENT.clubes.length === 1 ? " clube liberado" : " clubes liberados");
     $("clubs").innerHTML = CONTENT.clubes.map(function (c) {
       return '<button class="club" type="button" data-id="' + esc(c.id) + '" aria-pressed="' + (!!current && c.id === current.id) + '" style="--sel:' + esc((c.cores || [])[0] || "") + '">' +
         (c.escudo ? '<img src="' + esc(c.escudo) + '" alt="">' : "") + "<span>" + esc(c.nome) + "</span></button>";
@@ -641,29 +734,197 @@
   });
   $("logoutBtn").addEventListener("click", function () {
     clearSession();
-    CONTENT = null; current = null; setClubVars(null);
+    CONTENT = null; current = null; SESSION = null; ADM = null; setClubVars(null);
     $("app").hidden = true; $("gate").hidden = false;
     form.reset(); btn.disabled = false; btn.textContent = "Entrar";
     $("club").innerHTML = ""; uEl.focus();
   });
 
+  var SESSION = null;
   function start(session, content) {
-    CONTENT = content;
+    CONTENT = content; SESSION = session;
     $("whoName").textContent = session.nome || "lojista";
+    $("adminBtn").hidden = session.papel !== "admin";
+    $("panel").hidden = true;
     $("updated").textContent = content.atualizadoEm ? "Conteúdo atualizado em " + fmtDate(content.atualizadoEm) : "";
     renderAbout();
-    select(null, false);
+    select(CONTENT.clubes.length === 1 ? CONTENT.clubes[0].id : null, false);
     try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
     $("gate").hidden = true; $("app").hidden = false;
     window.scrollTo(0, 0);
   }
 
+  /* ---------- Painel de acessos (só admin) ---------- */
+  var ADM = null; // { users: [ { e, info, orig, novaSenha?, removido?, novo? } ], clubesInfo: [ {id,nome,escudo} ] }
+  var GH_KEY = "iconyx-admin-gh";
+  function clubesAdmin() {
+    // O admin vê todos os clubes; ids na ordem do portal.
+    return CONTENT.clubes.map(function (c) { return { id: c.id, nome: c.nome, escudo: c.escudo }; });
+  }
+  async function loadPanel() {
+    await loadAcessos();
+    var users = [];
+    for (var i = 0; i < ACESSOS.entradas.length; i++) {
+      var e = ACESSOS.entradas[i], info = await openBox(SESSION.A, e.adm);
+      users.push({ e: e, info: info, orig: JSON.stringify(info) });
+    }
+    users.sort(function (a, b) { return (a.info.papel === "admin" ? -1 : 0) - (b.info.papel === "admin" ? -1 : 0) || a.info.nome.localeCompare(b.info.nome); });
+    ADM = { users: users, clubesInfo: clubesAdmin() };
+    renderPanel();
+  }
+  function genPass() {
+    var abc = "abcdefghjkmnpqrstuvwxyz23456789", r = rand(12), s = "";
+    for (var i = 0; i < 12; i++) s += abc[r[i] % abc.length] + (i % 4 === 3 && i < 11 ? "-" : "");
+    return s;
+  }
+  function isDirty(x) { return x.novo || x.removido || x.novaSenha || JSON.stringify(x.info) !== x.orig; }
+  function pending() { return ADM ? ADM.users.filter(isDirty).length : 0; }
+  function clubChips(sel, attr) {
+    var todos = sel === "todos";
+    return '<button type="button" class="pclub all" ' + attr + ' data-c="*" aria-pressed="' + todos + '">Todos os clubes</button>' +
+      ADM.clubesInfo.map(function (c) {
+        var on = todos || (Array.isArray(sel) && sel.indexOf(c.id) >= 0);
+        return '<button type="button" class="pclub" ' + attr + ' data-c="' + esc(c.id) + '" aria-pressed="' + on + '"' + (todos ? " disabled" : "") + '>' +
+          (c.escudo ? '<img src="' + esc(c.escudo) + '" alt="">' : "") + esc(c.nome) + "</button>";
+      }).join("");
+  }
+  function toggleSel(sel, c) {
+    if (c === "*") return sel === "todos" ? [] : "todos";
+    var arr = sel === "todos" ? [] : sel.slice(), k = arr.indexOf(c);
+    if (k >= 0) arr.splice(k, 1); else arr.push(c);
+    return arr;
+  }
+  var NEW_SEL = "todos";
+  function renderPanel() {
+    var lojistas = ADM.users.filter(function (x) { return x.info.papel !== "admin" && !x.removido; });
+    $("panelCount").textContent = lojistas.length + (lojistas.length === 1 ? " lojista" : " lojistas") + " · " + lojistas.filter(function (x) { return x.info.ativo; }).length + " ativos";
+    $("panelList").innerHTML = ADM.users.map(function (x, i) {
+      var inf = x.info;
+      if (x.removido) return "";
+      if (inf.papel === "admin") return '<div class="prow"><div class="prow-top"><div><b>' + esc(inf.nome) + '</b><span class="label">' + esc(inf.usuario) + '</span></div><span class="pill adm">Administrador · vê tudo</span></div></div>';
+      return '<div class="prow' + (inf.ativo ? "" : " off") + (isDirty(x) ? " dirty" : "") + '" data-u="' + i + '">' +
+        '<div class="prow-top"><div><b>' + esc(inf.nome) + '</b><span class="label">' + esc(inf.usuario) + (x.novo ? " · novo" : "") + (isDirty(x) && !x.novo ? " · alterado" : "") + "</span></div>" +
+        '<span class="pill ' + (inf.ativo ? "on" : "off") + '">' + (inf.ativo ? "Ativo" : "Desativado") + "</span></div>" +
+        '<div class="pclubs">' + clubChips(inf.clubes, 'data-uc="' + i + '"') + "</div>" +
+        '<div class="acts"><button type="button" class="btn btn--line" data-act="ativo" data-i="' + i + '">' + (inf.ativo ? "Desativar acesso" : "Ativar acesso") + "</button>" +
+        '<button type="button" class="btn btn--line" data-act="senha" data-i="' + i + '">Gerar nova senha</button>' +
+        '<button type="button" class="btn btn--line" data-act="remover" data-i="' + i + '">Remover</button></div></div>';
+    }).join("");
+    $("newClubes").innerHTML = clubChips(NEW_SEL, "data-nc");
+    var n = pending();
+    $("pendCount").textContent = n ? n + (n === 1 ? " alteração não publicada" : " alterações não publicadas") : "Nada para publicar";
+    $("pubBtn").disabled = !n; $("discardBtn").disabled = !n;
+  }
+  function panelMsg(text, isErr) { var m = $("panelMsg"); m.innerHTML = text; m.classList.toggle("err", !!isErr); m.hidden = !text; }
+
+  $("adminBtn").addEventListener("click", function () {
+    var pn = $("panel");
+    if (!pn.hidden) { pn.hidden = true; return; }
+    pn.hidden = false; panelMsg("");
+    try { var t = localStorage.getItem(GH_KEY); if (t) { $("ghToken").value = t; $("ghRemember").checked = true; } } catch (e) {}
+    $("panelList").innerHTML = '<p class="label">Carregando acessos…</p>';
+    loadPanel().then(function () { pn.scrollIntoView({ behavior: "smooth", block: "start" }); }, function () { panelMsg("Não foi possível abrir a lista de acessos.", true); });
+  });
+  $("panel").addEventListener("click", function (ev) {
+    if (!ADM) return;
+    var uc = ev.target.closest("[data-uc]");
+    if (uc) { var x = ADM.users[+uc.getAttribute("data-uc")]; x.info.clubes = toggleSel(x.info.clubes, uc.getAttribute("data-c")); renderPanel(); return; }
+    var nc = ev.target.closest("[data-nc]");
+    if (nc) { NEW_SEL = toggleSel(NEW_SEL, nc.getAttribute("data-c")); renderPanel(); return; }
+    var b = ev.target.closest("[data-act]");
+    if (!b) return;
+    var u = ADM.users[+b.getAttribute("data-i")], act = b.getAttribute("data-act");
+    if (act === "ativo") u.info.ativo = !u.info.ativo;
+    if (act === "senha") { u.novaSenha = genPass(); panelMsg("Nova senha de <b>" + esc(u.info.nome) + "</b>: <code>" + esc(u.novaSenha) + "</code>\nAnote antes de publicar. A senha antiga para de funcionar quando você publicar."); }
+    if (act === "remover") {
+      if (b.getAttribute("data-confirm") !== "1") { b.setAttribute("data-confirm", "1"); b.textContent = "Confirmar remoção"; return; }
+      if (u.novo) ADM.users.splice(ADM.users.indexOf(u), 1); else u.removido = true;
+    }
+    renderPanel();
+  });
+  $("newForm").addEventListener("submit", async function (ev) {
+    ev.preventDefault();
+    var nome = $("newNome").value.trim(), usuario = norm($("newUser").value), senha = $("newPass").value.trim() || genPass();
+    if (!nome || !usuario) { panelMsg("Preencha o nome da loja e o usuário.", true); return; }
+    if (!/^[a-z0-9._-]{3,}$/.test(usuario)) { panelMsg("O usuário deve ter pelo menos 3 caracteres, só com letras minúsculas, números, ponto, hífen ou sublinhado.", true); return; }
+    if (NEW_SEL !== "todos" && !NEW_SEL.length) { panelMsg("Escolha pelo menos um clube para o lojista.", true); return; }
+    var id = await userId(usuario);
+    if (ADM.users.some(function (x) { return !x.removido && x.e.id === id; })) { panelMsg("Já existe um acesso com o usuário <b>" + esc(usuario) + "</b>.", true); return; }
+    var info = { usuario: usuario, nome: nome, papel: "lojista", u: b64(rand(32)), ativo: true, clubes: NEW_SEL };
+    ADM.users.push({ e: { id: id }, info: info, orig: "", novo: true, novaSenha: senha });
+    panelMsg("Lojista <b>" + esc(nome) + "</b> adicionado.\nUsuário: <code>" + esc(usuario) + "</code> · Senha: <code>" + esc(senha) + "</code>\nAnote os dados e clique em Publicar alterações para liberar o acesso.");
+    $("newForm").reset(); NEW_SEL = "todos"; renderPanel();
+  });
+  $("discardBtn").addEventListener("click", function () { panelMsg(""); loadPanel(); });
+
+  // Monta a nova lista de acessos com as mesmas regras de tools/portal.mjs.
+  async function buildAcessos() {
+    var out = [];
+    for (var i = 0; i < ADM.users.length; i++) {
+      var x = ADM.users[i];
+      if (x.removido) continue;
+      if (!isDirty(x)) { out.push(x.e); continue; }
+      var inf = x.info, e = Object.assign({}, x.e);
+      if (x.novaSenha) {
+        var salt = rand(16);
+        var box = await sealBox(await passKey(inf.usuario, x.novaSenha, salt, ITERS), { u: inf.u, nome: inf.nome, papel: inf.papel, usuario: inf.usuario });
+        e.salt = b64(salt); e.iters = ITERS; e.iv = box.iv; e.ct = box.ct;
+      }
+      inf.atualizado = new Date().toISOString().slice(0, 10);
+      e.adm = await sealBox(SESSION.A, inf);
+      if (inf.ativo) {
+        var ids = inf.clubes === "todos" ? Object.keys(SESSION.clubes) : inf.clubes, map = {};
+        ids.forEach(function (id) { var c = SESSION.clubes[id]; if (c) map[c.ref] = c.k; });
+        e.grant = await sealBox(inf.u, { k0: SESSION.k0, todos: inf.clubes === "todos", clubes: map });
+      } else e.grant = null;
+      out.push(e);
+    }
+    return { versao: 2, entradas: out };
+  }
+  function utf8b64(str) { return b64(enc.encode(str)); }
+  $("pubBtn").addEventListener("click", async function () {
+    var token = $("ghToken").value.trim(), btnP = $("pubBtn");
+    if (!token) { panelMsg("Cole o token do GitHub para publicar. Veja abaixo como gerar.", true); $("ghToken").focus(); return; }
+    try { if ($("ghRemember").checked) localStorage.setItem(GH_KEY, token); else localStorage.removeItem(GH_KEY); } catch (e) {}
+    btnP.disabled = true; btnP.textContent = "Publicando…";
+    try {
+      var novo = await buildAcessos();
+      var api = "https://api.github.com/repos/" + DATA.repo + "/contents/" + DATA.arquivoAcessos;
+      var h = { Authorization: "Bearer " + token, Accept: "application/vnd.github+json" };
+      var cur = await fetch(api + "?ref=" + encodeURIComponent(DATA.branch), { headers: h, cache: "no-store" });
+      if (cur.status === 401 || cur.status === 403) throw new Error("O GitHub recusou o token. Confira se ele tem permissão de escrita em Contents no repositório iconyx-lojistas.");
+      if (!cur.ok) throw new Error("Não foi possível ler a lista atual no GitHub (erro " + cur.status + ").");
+      var curJ = await cur.json();
+      var put = await fetch(api, { method: "PUT", headers: h, body: JSON.stringify({
+        message: "Acessos de lojistas atualizados pelo painel (" + pending() + " alterações)", content: utf8b64(JSON.stringify(novo, null, 2) + "\n"), sha: curJ.sha, branch: DATA.branch }) });
+      if (!put.ok) throw new Error(put.status === 409 ? "A lista mudou no GitHub enquanto você editava. Recarregue o painel e refaça as mudanças." : "O GitHub não aceitou a gravação (erro " + put.status + ").");
+      ACESSOS = novo;
+      panelMsg("Alterações publicadas. Em cerca de um minuto elas valem para os lojistas." + ($("panelMsg").innerHTML.indexOf("<code>") >= 0 ? "\n" + $("panelMsg").innerHTML : ""));
+      await loadPanelFrom(novo);
+    } catch (err) {
+      panelMsg(esc(err.message || "Não foi possível publicar."), true);
+    } finally { btnP.textContent = "Publicar alterações"; renderPanel(); }
+  });
+  async function loadPanelFrom(acessos) {
+    var users = [];
+    for (var i = 0; i < acessos.entradas.length; i++) {
+      var e = acessos.entradas[i], info = await openBox(SESSION.A, e.adm);
+      users.push({ e: e, info: info, orig: JSON.stringify(info) });
+    }
+    users.sort(function (a, b) { return (a.info.papel === "admin" ? -1 : 0) - (b.info.papel === "admin" ? -1 : 0) || a.info.nome.localeCompare(b.info.nome); });
+    ADM.users = users;
+  }
+
   /* ---------- Início ---------- */
   setClubVars(null);
   var s = readSession();
-  if (s && s.k && window.crypto && crypto.subtle) {
-    openContent(s.k).then(function (c) { start(s, c); }, function () { clearSession(); uEl.focus(); });
+  if (s && s.u && s.id && window.crypto && crypto.subtle) {
+    loadAcessos().then(function () { return entrar(s); }).then(function (r) {
+      if (r.erro) { clearSession(); errEl.textContent = r.erro; uEl.focus(); return; }
+      start(r.sessao, r.conteudo);
+    }, function () { clearSession(); uEl.focus(); });
   } else {
+    clearSession();
     setTimeout(function () { uEl.focus(); }, 60);
   }
 })();
