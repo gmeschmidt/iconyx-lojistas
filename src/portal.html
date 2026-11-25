@@ -175,6 +175,17 @@
   .txt p[data-text] { color: var(--ink-2); font-size: 15.5px; line-height: 1.7; white-space: pre-line; overflow-wrap: anywhere; }
   .acts { display: flex; flex-wrap: wrap; gap: 10px; }
 
+  .v3d { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); background: var(--surface); border: 1px solid var(--line); min-width: 0; }
+  .v3d-stage { position: relative; background: radial-gradient(circle at 50% 40%, var(--surface), var(--plinth) 70%); min-height: 440px; }
+  .v3d-stage model-viewer { width: 100%; height: 100%; min-height: 440px; background: transparent; --poster-color: transparent; }
+  .v3d-hint { position: absolute; left: 14px; top: 12px; pointer-events: none; }
+  .ar-btn { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); padding: 12px 20px; border: 0; border-radius: 24px; color: #fff; font: 600 14px var(--sans); cursor: pointer; }
+  .v3d .body { padding: clamp(20px, 2.6vw, 30px); display: grid; gap: 14px; align-content: start; min-width: 0; }
+  .v3d h4 { font-size: clamp(22px, 2.4vw, 28px); line-height: 1; }
+  .v3d .body > p:not(.label) { font-size: 15px; line-height: 1.65; }
+  .v3d b { color: var(--ink); font-weight: 600; }
+  pre.code { margin: 0; max-height: 180px; overflow: auto; background: var(--bg); border: 1px solid var(--line); padding: 12px 14px; font: 400 11.5px/1.55 var(--mono); color: var(--ink-2); white-space: pre; }
+  .note3d { border: 1px dashed var(--line); padding: 12px 14px; color: var(--mute); font-size: 14px; }
   .pick-hint { padding: 48px 24px; text-align: center; border: 1px dashed var(--line); display: grid; gap: 8px; justify-items: center; }
   .pick-hint h3 { font-size: 28px; line-height: 1; }
   .pick-hint p:last-child { max-width: 52ch; color: var(--mute); }
@@ -192,7 +203,8 @@
     .about { grid-template-columns: minmax(0, 1fr); }
   }
   @media (max-width: 760px) {
-    .item { grid-template-columns: minmax(0, 1fr); }
+    .item, .v3d { grid-template-columns: minmax(0, 1fr); }
+    .v3d-stage, .v3d-stage model-viewer { min-height: 340px; }
     .item .pic { min-height: 220px; }
     .item .pic img { max-height: 260px; }
     .stats { grid-template-columns: minmax(0, 1fr); }
@@ -480,9 +492,61 @@
     res = res.map(function (r) { return r.tipo === "imagens" && fotoProd ? Object.assign({}, r, { imagem: fotoProd }) : r; });
     html += '<section class="sec" aria-labelledby="secRes"><div class="sec-head"><h2 class="wide" id="secRes">Para baixar</h2><span class="label">Arquivos oficiais da linha ' + esc(c.nome) + " ICONYX</span></div>" +
       (res.length ? '<div class="tiles">' + res.map(function (r) { return tile(r); }).join("") + "</div>" : '<div class="empty">Os materiais deste clube estão em preparação.</div>') + "</section>";
+    var m3d = prods.filter(function (p) { return p.modelo3d; });
+    if (m3d.length) {
+      html += '<section class="sec" aria-labelledby="sec3d"><div class="sec-head"><h2 class="wide" id="sec3d">Embalagens em 3D</h2><span class="label">Para incorporar no seu site</span></div>' +
+        m3d.map(function (p) { return viewerHTML(p, prods.indexOf(p)); }).join("") + "</section>";
+    }
     html += '<section class="sec" aria-labelledby="secTxt"><div class="sec-head"><h2 class="wide" id="secTxt">Descrições e fichas</h2><span class="label">' + prods.length + (prods.length === 1 ? " produto" : " produtos") + "</span></div>" +
       (prods.length ? '<div class="items">' + prods.map(itemHTML).join("") + "</div>" : '<div class="empty">Os textos deste clube estão em preparação.</div>') + "</section>";
     el.innerHTML = html;
+    if (m3d.length) loadViewer();
+  }
+
+  /* ---------- 3D ---------- */
+  var MV_SRC = "https://cdn.jsdelivr.net/npm/@google/model-viewer@4.4.0/dist/model-viewer.min.js";
+  var mvLoaded = false;
+  function loadViewer() {
+    if (mvLoaded) return; mvLoaded = true;
+    var sc = document.createElement("script"); sc.type = "module"; sc.src = MV_SRC; document.head.appendChild(sc);
+  }
+  function publicBase() {
+    if (CONTENT.base3d) return CONTENT.base3d.replace(/\/?$/, "/");
+    var h = location.hostname;
+    if (location.protocol === "https:" && h && !/claude/i.test(h)) return location.origin + location.pathname.replace(/[^/]*$/, "");
+    return "";
+  }
+  function embedCode(p) {
+    var m = p.modelo3d, url = publicBase() + m.arquivo, cor = m.cor || "#111614";
+    return [
+      "<!-- " + m.titulo + " | ICONYX -->",
+      '<script type="module" src="' + MV_SRC + '"><\/script>',
+      "<model-viewer",
+      '  src="' + url + '"',
+      '  alt="' + m.alt + '"',
+      "  camera-controls touch-action=\"pan-y\" auto-rotate auto-rotate-delay=\"1500\" rotation-per-second=\"18deg\"",
+      '  camera-orbit="25deg 75deg auto" shadow-intensity="1" environment-image="neutral" exposure="1"',
+      '  ar ar-modes="webxr scene-viewer quick-look" ar-placement="floor"',
+      '  style="width:100%; height:520px; background:transparent;">',
+      '  <button slot="ar-button" style="position:absolute; bottom:16px; left:50%; transform:translateX(-50%); padding:12px 20px; border:0; border-radius:24px; background:' + cor + '; color:#fff; font:600 15px system-ui, sans-serif; cursor:pointer;">Ver no seu espaço</button>',
+      "</model-viewer>"
+    ].join("\n");
+  }
+  function viewerHTML(p, i) {
+    var m = p.modelo3d, base = publicBase();
+    return '<article class="v3d" data-i="' + i + '">' +
+      '<div class="v3d-stage"><model-viewer src="' + esc(m.arquivo) + '" alt="' + esc(m.alt) + '" camera-controls touch-action="pan-y" auto-rotate auto-rotate-delay="1500" rotation-per-second="18deg" camera-orbit="25deg 75deg auto" shadow-intensity="1" environment-image="neutral" exposure="1" ar ar-modes="webxr scene-viewer quick-look" ar-placement="floor">' +
+      '<button slot="ar-button" class="ar-btn" style="background:' + esc(m.cor || "#111614") + '">Ver no seu espaço</button>' +
+      '<div slot="progress-bar"></div></model-viewer><span class="v3d-hint label">Arraste para girar · pinça ou roda para aproximar</span></div>' +
+      '<div class="body"><p class="label">' + esc(p.categoria || "") + '</p><h4 class="wide">' + esc(m.titulo) + "</h4>" +
+      "<p>A caixa em 3D gira com o mouse ou o dedo e, no celular, pode ser vista em realidade aumentada pelo botão <b>Ver no seu espaço</b>. " + (base ? "Cole o código abaixo num bloco de HTML personalizado da página do produto no seu site. O arquivo fica hospedado pela ICONYX, então você não precisa enviar nada." : "Em breve você poderá copiar um código pronto para colocar esta caixa em 3D na página do produto no seu site.") + "</p>" +
+      (base
+        ? '<pre class="code" data-code>' + esc(embedCode(p)) + "</pre>" +
+          '<div class="acts"><button class="btn btn--ink" type="button" data-copy="embed">' + ICON_COPY + 'Copiar código para o seu site</button>' +
+          '<a class="btn btn--line" href="' + esc(base + m.arquivo) + '" target="_blank" rel="noopener noreferrer">Baixar arquivo 3D (.glb)</a></div>'
+        : '<p class="note3d">O código para incorporar aparece aqui assim que o portal estiver no endereço definitivo.</p>') +
+      '<p class="label">Funciona em sites que aceitam HTML personalizado. Marketplaces como Mercado Livre e Amazon não aceitam.</p>' +
+      "</div></article>";
   }
   function select(id, scroll) {
     current = id ? CONTENT.clubes.filter(function (x) { return x.id === id; })[0] || null : null;
@@ -531,7 +595,8 @@
     if (ab && CONTENT && CONTENT.marca) { copyText(CONTENT.marca.texto, ab, $("aboutText")); return; }
     var b = ev.target.closest("[data-copy]");
     if (!b || !current) return;
-    var art = b.closest(".item"), p = current.produtos[+art.getAttribute("data-i")], what = b.getAttribute("data-copy");
+    var art = b.closest(".item, .v3d"), p = current.produtos[+art.getAttribute("data-i")], what = b.getAttribute("data-copy");
+    if (what === "embed") { copyText(embedCode(p), b, art.querySelector("[data-code]"), "Código copiado. Cole no HTML da página do produto."); return; }
     if (what === "ficha") copyText(current.nome + " · " + p.nome + "\n" + fichaText(p.ficha), b, art.querySelector("dl"), "Ficha técnica copiada.");
     else copyText(p[what] || "", b, art.querySelector('[data-text="' + what + '"]'));
   });
