@@ -118,6 +118,8 @@
   a.tile:hover { transform: translateY(-3px); box-shadow: 0 18px 30px -22px rgba(0, 0, 0, .4); }
   .tile .pic { aspect-ratio: 4 / 3; max-width: 100%; display: grid; place-items: center; background: var(--plinth); overflow: hidden; position: relative; }
   .tile .pic img { position: absolute; inset: 18px; width: calc(100% - 36px); height: calc(100% - 36px); object-fit: contain; filter: drop-shadow(0 10px 12px rgba(0, 0, 0, .18)); }
+  .tile .pic.duo { display: flex; justify-content: center; align-items: center; gap: 6%; padding: 18px; }
+  .tile .pic.duo img { position: static; width: auto; height: 100%; max-width: 46%; object-fit: contain; }
   .tile .pic.ico { background: var(--club); color: var(--on-club); }
   .tile .pic.ico svg { width: 30%; height: auto; }
   .tile .pic.ico svg[viewBox="0 0 757.32 948.15"] { width: auto; height: 42%; }
@@ -379,7 +381,8 @@
 
   function tile(r, kind) {
     var pic;
-    if (r.imagem) pic = '<div class="pic"><img src="' + esc(r.imagem) + '" alt=""></div>';
+    if (r.imagens && r.imagens.length) pic = '<div class="pic duo">' + r.imagens.map(function (src, k) { return '<img src="' + esc(src) + '" alt="' + (k ? "Verso" : "Frente") + ' da caixa">'; }).join("") + "</div>";
+    else if (r.imagem) pic = '<div class="pic"><img src="' + esc(r.imagem) + '" alt=""></div>';
     else {
       var ic = r.tipo === "banners" ? ICON_BANNER : r.tipo === "embalagens" ? ICON_BOX : r.tipo === "videos" ? ICON_PLAY : r.tipo === "logos" ? ICON_LOGO : ICON_IMG;
       pic = '<div class="pic ico' + (kind === "brand" ? " brand" : "") + '">' + ic + "</div>";
