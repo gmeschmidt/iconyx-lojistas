@@ -189,6 +189,11 @@
   .vid video { width: 120px; height: 120px; object-fit: cover; background: #ffffff; border: 1px solid var(--line); }
   .vid > div { display: grid; gap: 6px; justify-items: start; min-width: 0; }
   .vid p:not(.label) { font-size: 14px; }
+  .ptabs { display: flex; flex-wrap: wrap; gap: 8px; }
+  .ptab { appearance: none; cursor: pointer; font: 500 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink); background: var(--surface); border: 1px solid var(--line); padding: 10px 12px; }
+  .ptab:hover { border-color: var(--ink); }
+  .ptab[aria-selected="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .ptab:focus-visible { outline: none; box-shadow: var(--focus); }
   .note3d { border: 1px dashed var(--line); padding: 12px 14px; color: var(--mute); font-size: 14px; }
   .pick-hint { padding: 48px 24px; text-align: center; border: 1px dashed var(--line); display: grid; gap: 8px; justify-items: center; }
   .pick-hint h3 { font-size: 28px; line-height: 1; }
@@ -498,8 +503,11 @@
       (res.length ? '<div class="tiles">' + res.map(function (r) { return tile(r); }).join("") + "</div>" : '<div class="empty">Os materiais deste clube estão em preparação.</div>') + "</section>";
     var m3d = prods.filter(function (p) { return p.modelo3d; });
     if (m3d.length) {
-      html += '<section class="sec" aria-labelledby="sec3d"><div class="sec-head"><h2 class="wide" id="sec3d">Embalagens em 3D</h2><span class="label">Para incorporar no seu site</span></div>' +
-        m3d.map(function (p) { return viewerHTML(p, prods.indexOf(p)); }).join("") + "</section>";
+      var first = m3d.filter(function (p) { return p.id === "estadio-premium"; })[0] || m3d[0];
+      html += '<section class="sec" aria-labelledby="sec3d"><div class="sec-head"><h2 class="wide" id="sec3d">Embalagens em 3D</h2><span class="label">' + m3d.length + (m3d.length === 1 ? " caixa" : " caixas") + " · para incorporar no seu site</span></div>" +
+        (m3d.length > 1 ? '<div class="ptabs" role="tablist" aria-label="Escolha a caixa">' + m3d.map(function (p) {
+          return '<button type="button" role="tab" class="ptab" data-v3d="' + prods.indexOf(p) + '" aria-selected="' + (p === first) + '">' + esc(p.categoria || p.nome) + "</button>"; }).join("") + "</div>" : "") +
+        '<div id="v3dWrap">' + viewerHTML(first, prods.indexOf(first)) + "</div></section>";
     }
     html += '<section class="sec" aria-labelledby="secTxt"><div class="sec-head"><h2 class="wide" id="secTxt">Descrições e fichas</h2><span class="label">' + prods.length + (prods.length === 1 ? " produto" : " produtos") + "</span></div>" +
       (prods.length ? '<div class="items">' + prods.map(itemHTML).join("") + "</div>" : '<div class="empty">Os textos deste clube estão em preparação.</div>') + "</section>";
@@ -612,6 +620,14 @@
   document.addEventListener("click", function (ev) {
     var cb = ev.target.closest(".club");
     if (cb) { var cid = cb.getAttribute("data-id"); select(current && current.id === cid ? null : cid, true); return; }
+    var tb = ev.target.closest("[data-v3d]");
+    if (tb && current) {
+      var pi = +tb.getAttribute("data-v3d");
+      document.querySelectorAll("[data-v3d]").forEach(function (x) { x.setAttribute("aria-selected", String(x === tb)); });
+      $("v3dWrap").innerHTML = viewerHTML(current.produtos[pi], pi);
+      fixArtifactModels();
+      return;
+    }
     var ab = ev.target.closest("[data-copy-about]");
     if (ab && CONTENT && CONTENT.marca) { copyText(CONTENT.marca.texto, ab, $("aboutText")); return; }
     var b = ev.target.closest("[data-copy]");
