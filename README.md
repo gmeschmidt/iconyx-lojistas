@@ -17,3 +17,5 @@ node tools/portal.mjs build                                    # gera dist/index
 ```
 
 `dist/index.html` é o arquivo publicado como Artifact. `public/` é a versão para hospedagem estática (Vercel): o `build` também gera `public/index.html`, e o `vercel.json` aponta para essa pasta, sem etapa de build.
+
+As fotos dos produtos ficam em `public/img/<clube>/<produto>.webp` (fotos públicas, já exibidas nas landing pages). Ao publicar como Artifact, essas imagens vão junto como arquivos `img/...`.
