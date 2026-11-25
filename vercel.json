@@ -39,12 +39,26 @@
           "value": "*"
         },
         {
-          "key": "Content-Type",
-          "value": "model/gltf-binary"
-        },
-        {
           "key": "Cache-Control",
           "value": "public, max-age=86400"
+        }
+      ]
+    },
+    {
+      "source": "/3d/(.*)\\.glb",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "model/gltf-binary"
+        }
+      ]
+    },
+    {
+      "source": "/3d/(.*)\\.usdz",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "model/vnd.usdz+zip"
         }
       ]
     }

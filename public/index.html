@@ -530,7 +530,7 @@
     document.querySelectorAll("model-viewer[data-src]").forEach(function (mv) {
       var src = mv.getAttribute("data-src");
       fetch(src, { method: "HEAD" }).then(function (r) {
-        if (r.ok && !/json|html/.test(r.headers.get("content-type") || "")) { mv.setAttribute("src", src); return; }
+        if (r.ok && !/json|html/.test(r.headers.get("content-type") || "")) { mv.setAttribute("ios-src", src.replace(/\.glb$/, ".usdz")); mv.setAttribute("src", src); return; }
         return fetch(src + ".json").then(function (r2) { return r2.json(); }).then(function (j) {
           var bin = atob(j.glb), u8 = new Uint8Array(bin.length);
           for (var k = 0; k < bin.length; k++) u8[k] = bin.charCodeAt(k);
@@ -560,6 +560,7 @@
       '<script type="module" src="' + MV_SRC + '"><\/script>',
       "<model-viewer",
       '  src="' + url + '"',
+      '  ios-src="' + url.replace(/\.glb$/, ".usdz") + '"',
       '  alt="' + m.alt + '"',
       "  camera-controls touch-action=\"pan-y\" auto-rotate auto-rotate-delay=\"1500\" rotation-per-second=\"18deg\"",
       '  camera-orbit="25deg 75deg auto" shadow-intensity="1" environment-image="neutral" exposure="1"',
@@ -580,7 +581,8 @@
       (base
         ? '<pre class="code" data-code>' + esc(embedCode(p)) + "</pre>" +
           '<div class="acts"><button class="btn btn--ink" type="button" data-copy="embed">' + ICON_COPY + 'Copiar código para o seu site</button>' +
-          '<a class="btn btn--line" href="' + esc(base + m.arquivo) + '" target="_blank" rel="noopener noreferrer">Baixar arquivo 3D (.glb)</a></div>'
+          '<a class="btn btn--line" href="' + esc(base + m.arquivo) + '" target="_blank" rel="noopener noreferrer">Arquivo 3D (.glb · Android e sites)</a>' +
+          '<a class="btn btn--line" href="' + esc(base + m.arquivo.replace(/\.glb$/, ".usdz")) + '" rel="ar">Arquivo 3D (.usdz · iPhone e iPad)</a></div>'
         : '<p class="note3d">O código para incorporar aparece aqui assim que o portal estiver no endereço definitivo.</p>') +
       '<p class="label">Funciona em sites que aceitam HTML personalizado. Marketplaces como Mercado Livre e Amazon não aceitam.</p>' +
       (m.video ? '<div class="vid"><video src="' + esc(m.video) + '" muted loop playsinline autoplay preload="metadata" aria-label="Vídeo da caixa girando"></video>' +
