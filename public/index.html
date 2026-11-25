@@ -404,7 +404,7 @@
   function tile(r, kind) {
     var pic;
     if (r.imagens && r.imagens.length) pic = '<div class="pic ' + (r.alternar ? "swap" : "duo") + '">' + r.imagens.map(function (src, k) { return '<img src="' + esc(src) + '" alt="' + (k ? "Verso" : "Frente") + ' da caixa">'; }).join("") +
-      (r.alternar ? '<span class="swap-tag" aria-hidden="true"><i>Frente</i><i>Verso</i></span>' : "") + "</div>";
+      "</div>";
     else if (r.imagem) pic = '<div class="pic"><img src="' + esc(r.imagem) + '" alt=""></div>';
     else {
       var ic = r.tipo === "banners" ? ICON_BANNER : r.tipo === "embalagens" ? ICON_BOX : r.tipo === "videos" ? ICON_PLAY : r.tipo === "logos" ? ICON_LOGO : ICON_IMG;
