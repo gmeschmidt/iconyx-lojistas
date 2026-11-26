@@ -148,7 +148,8 @@ function woodTex(){
   }
   const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = 8; return t;
 }
-const wood = new THREE.MeshPhysicalMaterial({map: woodTex(), roughness: 0.58, clearcoat: 0.08, clearcoatRoughness: 0.4, envMapIntensity: 0.6});
+// madeira fosca (acetinada): sem verniz, para a luz da frente não deixar o tampo esbranquiçado
+const wood = new THREE.MeshStandardMaterial({map: woodTex(), roughness: 0.82, metalness: 0, envMapIntensity: 0.3});
 const mat = (c, r=0.6, extra={}) => new THREE.MeshPhysicalMaterial(Object.assign({color: c, roughness: r, envMapIntensity: 0.6}, extra));
 function box(w,h,d,x,y,z,m,cast=true){ const o = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), m); o.position.set(x,y,z); o.castShadow = cast; o.receiveShadow = true; shelf.add(o); return o; }
 // tampo de 140 x 70 cm, 3 cm de espessura; parede a 10 cm do fundo
@@ -202,7 +203,7 @@ function applyNight(){
   // fim de tarde com a luz do quarto baixa: ambiente quente suave, janela fria de lado, abajur como destaque
   // luz mais macia: preenchimento quente pela frente e abajur mais suave, para não estourar a madeira nem acinzentar o branco
   hemi.intensity = 0.34; hemi.color.setHex(0xfff0e0); hemi.groundColor.setHex(0x3a2a1e);
-  key.intensity = 0.62; key.color.setHex(0xffe2c4); key.position.set(-5, 10, -12);
+  key.intensity = 0.62; key.color.setHex(0xffe2c4); key.position.set(-4, 16, -6);
   rim.intensity = 0.18; rim.color.setHex(0x9fb6d6); rim.position.set(5, 6, 7);
   kick.intensity = 0; moon.intensity = 0.12;
   ledLight.intensity = 1.35; lampGlow.intensity = 0.45; r.toneMappingExposure = 1.0;
