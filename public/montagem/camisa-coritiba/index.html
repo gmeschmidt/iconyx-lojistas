@@ -75,7 +75,7 @@ const floor = new THREE.Mesh(new THREE.PlaneGeometry(40,40), new THREE.ShadowMat
 floor.rotation.x = -Math.PI/2; floor.receiveShadow = true; sc.add(floor);
 
 const cam = new THREE.PerspectiveCamera(30,1,0.1,100);
-const START = new THREE.Vector3(-5.2,3.6,-9.8), TARGET = new THREE.Vector3(0,2.0,0);
+const START = new THREE.Vector3(-2.6,5.2,-8.7), TARGET = new THREE.Vector3(0,2.0,0);
 cam.position.copy(START);
 const ctl = new THREE.OrbitControls(cam, r.domElement);
 ctl.target.copy(TARGET); ctl.enableDamping = true; ctl.dampingFactor = 0.08;
@@ -189,7 +189,7 @@ new THREE.GLTFLoader().load(MODEL, gl => {
   // arte da plaquinha do QR, aplicada na face de cima do tile inclinado
   const qtex = new THREE.TextureLoader().load('assets/plaquinha.png'); qtex.encoding = THREE.sRGBEncoding; qtex.anisotropy = 8;
   const qr = new THREE.Mesh(new THREE.PlaneGeometry(1.20, 0.40),
-    new THREE.MeshPhysicalMaterial({map:qtex, toneMapped:false, roughness:0.5, clearcoat:0.3, clearcoatRoughness:0.2, envMapIntensity:0.3, polygonOffset:true, polygonOffsetFactor:-2}));
+    new THREE.MeshStandardMaterial({map:qtex, roughness:0.75, metalness:0, envMapIntensity:0.25, polygonOffset:true, polygonOffsetFactor:-2}));
   const N = new THREE.Vector3(0,0.9659,-0.2589), Vv = new THREE.Vector3(0,0.2589,0.9659), U = new THREE.Vector3(-1,0,0);
   qr.matrixAutoUpdate = false;
   qr.matrix.makeBasis(U, Vv, N).setPosition(new THREE.Vector3(0, 0.15897, -0.71566).addScaledVector(N, 0.0015));
