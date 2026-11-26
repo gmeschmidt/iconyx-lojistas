@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Couto Pereira Premium · Caixa 3D ICONYX</title>
+<link rel="icon" type="image/png" href="../favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.4.0/dist/model-viewer.min.js"></script>
+<style>
+  /* Demonstração isolada: a caixa ocupa a tela inteira, com a ficha técnica discreta por cima. */
+  :root { --bg: #f3f4f2; --plinth: #e3e6e2; --ink: #111614; --mute: #5f6863; --line: #d4d8d4; --club: #035843; color-scheme: light; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #111312; --plinth: #1c201f; --ink: #eef1ef; --mute: #8f9894; --line: #2d3230; color-scheme: dark; } }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body { background: radial-gradient(circle at 50% 42%, var(--bg), var(--plinth) 75%); color: var(--ink); font-family: "Inter", -apple-system, "Segoe UI", sans-serif; overflow: hidden; }
+  model-viewer { position: fixed; inset: 0; width: 100%; height: 100%; background: transparent; --poster-color: transparent; }
+  .band { position: fixed; top: 0; left: 0; right: 0; height: 5px; display: flex; z-index: 3; }
+  .band i { flex: 1; }
+  header { position: fixed; z-index: 2; top: calc(18px + env(safe-area-inset-top, 0px)); left: max(18px, env(safe-area-inset-left, 0px)); right: max(18px, env(safe-area-inset-right, 0px));
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; pointer-events: none; }
+  .label { font: 500 11.5px/1.4 "IBM Plex Mono", ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--mute); }
+  h1 { margin: 6px 0 0; font-family: "Archivo", "Arial Narrow", sans-serif; font-variation-settings: "wdth" 118; font-weight: 800; text-transform: uppercase;
+    font-size: clamp(26px, 5vw, 48px); line-height: .9; letter-spacing: -.01em; }
+  dl { display: flex; flex-wrap: wrap; gap: 6px 20px; margin: 14px 0 0; }
+  dl div { display: grid; gap: 1px; }
+  dt { font: 400 10.5px "IBM Plex Mono", monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--mute); }
+  dd { margin: 0; font: 500 14px "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
+  .crest { width: clamp(52px, 8vw, 76px); height: auto; }
+  .hint { position: fixed; z-index: 2; left: 16px; right: 16px; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); text-align: center; pointer-events: none; }
+  .ar { position: absolute; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); border: 0; border-radius: 24px; padding: 13px 22px;
+    background: var(--club); color: #fff; font: 600 15px "Inter", system-ui, sans-serif; cursor: pointer; }
+  footer { position: fixed; z-index: 2; right: max(18px, env(safe-area-inset-right, 0px)); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); }
+  footer img { height: 18px; display: block; opacity: .85; }
+  @media (max-width: 600px), (pointer: coarse) { footer { display: none; } .hint { bottom: calc(80px + env(safe-area-inset-bottom, 0px)); } }
+</style>
+</head>
+<body>
+<div class="band" aria-hidden="true"><i style="background:#035843"></i><i style="background:#ffffff"></i><i style="background:#035843"></i></div>
+
+<model-viewer
+  src="../3d/coritiba/caixa-estadio-premium.glb"
+  ios-src="../3d/coritiba/caixa-estadio-premium.usdz"
+  alt="Caixa do kit de blocos de montar ICONYX Estádio Couto Pereira Premium, 1.099 peças, produto oficial licenciado Coritiba"
+  camera-controls touch-action="none" auto-rotate auto-rotate-delay="1500" rotation-per-second="18deg"
+  camera-orbit="25deg 75deg auto" shadow-intensity="1" environment-image="neutral" exposure="1"
+  ar ar-modes="webxr scene-viewer quick-look" ar-placement="floor">
+  <button slot="ar-button" class="ar">Ver no seu espaço</button>
+</model-viewer>
+
+<header>
+  <div>
+    <p class="label">Linha Coritiba ICONYX · Estádio Premium</p>
+    <h1>Couto Pereira</h1>
+    <dl>
+      <div><dt>Código</dt><dd>ICFUT0025</dd></div>
+      <div><dt>Peças</dt><dd>1.099</dd></div>
+      <div><dt>Escala</dt><dd>1:800</dd></div>
+      <div><dt>Medidas</dt><dd>26,4 × 28,8 × 14,2 cm</dd></div>
+    </dl>
+  </div>
+  <img class="crest" src="../img/coritiba/escudo.webp" alt="Escudo do Coritiba">
+</header>
+
+<p class="hint label">Arraste para girar · pinça ou roda para aproximar</p>
+<footer><img src="../img/logo-iconyx.png" alt="ICONYX"></footer>
+</body>
+</html>
