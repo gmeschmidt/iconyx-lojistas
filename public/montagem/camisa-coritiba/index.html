@@ -319,7 +319,7 @@ new THREE.GLTFLoader().load(MODEL, gl => {
   sc.add(root);
   document.getElementById('load').remove();
   // abre já com fundo verde e luz dramática
-  bgBtn.click(); setLight('estudio');
+  bgBtn.click(); setLight('dramatica');
   apply(0); setPlay(true); requestAnimationFrame(loop);
 }, undefined, () => { document.getElementById('load').textContent = 'Não foi possível carregar o modelo.'; });
 }
