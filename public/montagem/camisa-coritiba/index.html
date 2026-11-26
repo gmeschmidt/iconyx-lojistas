@@ -29,6 +29,9 @@
   body.drama .label{color:#f0f1ee}
   body.drama.verde{background:radial-gradient(85% 65% at 50% 36%,#1a5c3c 0%,#0a2c1c 55%,#020a06 100%)}
   body.verde #load{color:#cfe3d6}
+  body.noite{background:#1c1814 !important;color:#efe9e0}
+  body.noite .label{color:#e9e4dc}
+  body.noite #bg, body.noite #light{display:none}
 </style>
 </head>
 <body>
@@ -45,6 +48,7 @@
     <button type="button" id="reset">Voltar à posição original</button>
     <button type="button" id="bg" aria-pressed="false">Fundo verde</button>
     <button type="button" id="light" aria-pressed="false">Luz dramática</button>
+    <button type="button" id="shelf" aria-pressed="false">Na escrivaninha</button>
   </div>
 </div>
 
@@ -75,11 +79,12 @@ const floor = new THREE.Mesh(new THREE.PlaneGeometry(40,40), new THREE.ShadowMat
 floor.rotation.x = -Math.PI/2; floor.receiveShadow = true; sc.add(floor);
 
 const cam = new THREE.PerspectiveCamera(30,1,0.1,100);
-const START = new THREE.Vector3(-2.6,5.2,-8.7), TARGET = new THREE.Vector3(0,2.0,0);
+const START0 = new THREE.Vector3(-2.6,5.2,-8.7), TARGET0 = new THREE.Vector3(0,2.0,0);
+let START = START0.clone(), TARGET = TARGET0.clone();
 cam.position.copy(START);
 const ctl = new THREE.OrbitControls(cam, r.domElement);
 ctl.target.copy(TARGET); ctl.enableDamping = true; ctl.dampingFactor = 0.08;
-ctl.minDistance = 3; ctl.maxDistance = 16; ctl.maxPolarAngle = Math.PI*0.52; ctl.enablePan = false;
+ctl.minDistance = 3; ctl.maxDistance = 24; ctl.maxPolarAngle = Math.PI*0.52; ctl.enablePan = false;
 
 const resize = () => { const w = stage.clientWidth, h = stage.clientHeight; r.setSize(w,h,false); cam.aspect = w/h; cam.updateProjectionMatrix(); };
 new ResizeObserver(resize).observe(stage); resize();
@@ -121,9 +126,94 @@ let tw = null;
 function tween(to){ tw = {from:value, to, t:0}; }
 document.getElementById('next').addEventListener('click', () => go(1));
 document.getElementById('prev').addEventListener('click', () => go(-1));
-document.getElementById('reset').addEventListener('click', () => { camTw = {from:cam.position.clone(), t:0}; ctl.target.copy(TARGET); });
+document.getElementById('reset').addEventListener('click', () => { camTw = {from:cam.position.clone(), t:0}; tgTw = {from:ctl.target.clone(), t:0}; });
 addEventListener('keydown', e => { if (e.target === bar) return; if (e.key === 'ArrowRight') go(1); if (e.key === 'ArrowLeft') go(-1); if (e.key === ' ') { e.preventDefault(); play.click(); } });
-let camTw = null;
+let camTw = null, tgTw = null;
+// ===== cenário: escrivaninha em escala real (1 unidade = 4 cm; a camisa tem cerca de 12 x 14 cm) =====
+const CM = 0.25;
+const shelf = new THREE.Group(); shelf.visible = false; sc.add(shelf);
+function woodTex(){
+  const c = document.createElement('canvas'); c.width = 2048; c.height = 512; const g = c.getContext('2d');
+  g.fillStyle = '#4d301c'; g.fillRect(0,0,2048,512);
+  for (let i = 0; i < 260; i++){
+    const y = Math.random()*512, a = 0.04 + Math.random()*0.10, w = 0.6 + Math.random()*2.4;
+    g.strokeStyle = Math.random() < .5 ? `rgba(25,12,4,${a*1.4})` : `rgba(160,105,60,${a})`; g.lineWidth = w;
+    g.beginPath(); g.moveTo(0,y);
+    for (let x = 0; x <= 2048; x += 32) g.lineTo(x, y + Math.sin(x/110 + i)*3.5 + Math.sin(x/27 + i*2));
+    g.stroke();
+  }
+  const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = 8; return t;
+}
+const wood = new THREE.MeshPhysicalMaterial({map: woodTex(), roughness: 0.48, clearcoat: 0.25, clearcoatRoughness: 0.3, envMapIntensity: 0.6});
+const mat = (c, r=0.6, extra={}) => new THREE.MeshPhysicalMaterial(Object.assign({color: c, roughness: r, envMapIntensity: 0.6}, extra));
+function box(w,h,d,x,y,z,m,cast=true){ const o = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), m); o.position.set(x,y,z); o.castShadow = cast; o.receiveShadow = true; shelf.add(o); return o; }
+// tampo de 140 x 70 cm, 3 cm de espessura; parede a 10 cm do fundo
+const DW = 140*CM, DD = 70*CM, DT = 3*CM, ZF = -7.5, ZB = ZF + DD;
+box(DW, DT, DD, 0, -DT/2, (ZF+ZB)/2, wood, false);
+box(400, 0.2, 400, 0, -75*CM, 0, mat(0x2a211a, 0.9, {envMapIntensity: 0.2}), false);
+box(400, 60, 0.2, 0, 20, ZB + 10*CM, mat(0x6e6355, 0.95, {envMapIntensity: 0.2}), false);
+// notebook fechado (32 x 22 cm)
+const lap = box(32*CM, 1.6*CM, 22*CM, -8.0, 0.8*CM, ZB - 22*CM, mat(0x8d9093, 0.35, {metalness: 0.6}));
+lap.rotation.y = 0.18;
+// caderno com caneta (21 x 28 cm)
+const nb = box(21*CM, 1.2*CM, 28*CM, -5.2, 0.6*CM, ZF + 22*CM, mat(0x0c1e15, 0.9, {envMapIntensity: 0.15})); nb.rotation.y = -0.22;
+const pen = new THREE.Mesh(new THREE.CylinderGeometry(0.45*CM, 0.45*CM, 14*CM, 20), mat(0x202020, 0.3, {clearcoat: 0.8}));
+pen.rotation.set(0, -0.6, Math.PI/2); pen.position.set(-4.7, 1.65*CM, ZF + 22*CM); pen.castShadow = true; shelf.add(pen);
+// caneca (9,5 cm)
+const mugMat = new THREE.MeshPhysicalMaterial({color: 0xf1ece3, roughness: 0.3, clearcoat: 0.6, side: THREE.DoubleSide});
+const MX = 4.4, MZ = ZF + 26*CM;
+const mug = new THREE.Mesh(new THREE.CylinderGeometry(4*CM, 3.8*CM, 9.5*CM, 48, 1, true), mugMat); mug.position.set(MX, 4.75*CM, MZ); mug.castShadow = true; shelf.add(mug);
+const mb = new THREE.Mesh(new THREE.CircleGeometry(3.8*CM, 48), mugMat); mb.rotation.x = -Math.PI/2; mb.position.set(MX, 0.02, MZ); shelf.add(mb);
+const coffee = new THREE.Mesh(new THREE.CircleGeometry(3.85*CM, 48), new THREE.MeshStandardMaterial({color: 0x2a160b, roughness: 0.15})); coffee.rotation.x = -Math.PI/2; coffee.position.set(MX, 8.2*CM, MZ); shelf.add(coffee);
+const handle = new THREE.Mesh(new THREE.TorusGeometry(2.6*CM, 0.7*CM, 16, 40, Math.PI*1.3), mugMat);
+handle.position.set(MX + 4.2*CM, 4.75*CM, MZ); handle.rotation.z = -Math.PI*0.65; handle.castShadow = true; shelf.add(handle);
+// luminária de mesa (fonte de luz quente)
+const lampMat = mat(0x1d1d1b, 0.4, {metalness: 0.5});
+// luminária articulada: base atrás e à direita, cúpula sobre a frente da camisa
+const LB = new THREE.Vector3(8.4, 0, 2.4), LH = new THREE.Vector3(3.2, 8.4, -2.4);
+const lbase = new THREE.Mesh(new THREE.CylinderGeometry(7*CM, 7.5*CM, 1.5*CM, 40), lampMat); lbase.position.set(LB.x, 0.75*CM, LB.z); lbase.castShadow = true; shelf.add(lbase);
+const elbow = new THREE.Vector3(LB.x + 0.8, 7.0, LB.z + 0.9);
+function rod(p1, p2){ const d = p2.clone().sub(p1); const m = new THREE.Mesh(new THREE.CylinderGeometry(0.55*CM, 0.55*CM, d.length(), 16), lampMat);
+  m.position.copy(p1).addScaledVector(d, 0.5); m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), d.clone().normalize()); m.castShadow = true; shelf.add(m); }
+rod(new THREE.Vector3(LB.x, 0.3, LB.z), elbow); rod(elbow, LH.clone().add(new THREE.Vector3(0, 1.0, 0)));
+const joint = new THREE.Mesh(new THREE.SphereGeometry(1.1*CM, 16, 12), lampMat); joint.position.copy(elbow); shelf.add(joint);
+const shade = new THREE.Mesh(new THREE.ConeGeometry(6.5*CM, 11*CM, 40, 1, true), new THREE.MeshStandardMaterial({color: 0x1d1d1b, roughness: 0.4, metalness: 0.5, side: THREE.DoubleSide}));
+shade.position.copy(LH).add(new THREE.Vector3(0, 0.6, 0)); shade.lookAt(0, 1.8, 0); shade.rotateX(-Math.PI/2); shade.castShadow = false; shelf.add(shade);
+const bulb = new THREE.Mesh(new THREE.SphereGeometry(1.8*CM, 20, 16), new THREE.MeshBasicMaterial({color: 0xfff1d6})); bulb.position.copy(LH); shelf.add(bulb);
+const ledLight = new THREE.SpotLight(0xffc98a, 0, 26, 0.62, 0.9, 1.4); ledLight.position.copy(bulb.position);
+ledLight.target.position.set(0, 1.6, -0.6); ledLight.castShadow = true; ledLight.shadow.mapSize.set(2048,2048); ledLight.shadow.bias = -0.0005;
+shelf.add(ledLight); shelf.add(ledLight.target);
+const lampGlow = new THREE.PointLight(0xffb76b, 0, 7, 2); lampGlow.position.copy(bulb.position); shelf.add(lampGlow);
+const moon = new THREE.DirectionalLight(0x8fa8c8, 0); moon.position.set(-12, 9, 4); sc.add(moon);
+const NIGHT_BG = 0x1c1814;
+function applyNight(){
+  // fim de tarde com a luz do quarto baixa: ambiente quente suave, janela fria de lado, abajur como destaque
+  hemi.intensity = 0.09; hemi.color.setHex(0xffe6cc); hemi.groundColor.setHex(0x3a2a1e);
+  key.intensity = 0.22; key.color.setHex(0xffd2a0); key.position.set(-7, 9, -6);
+  rim.intensity = 0.22; rim.color.setHex(0x9fb6d6); rim.position.set(5, 6, 7);
+  kick.intensity = 0; moon.intensity = 0.3;
+  ledLight.intensity = 3.1; lampGlow.intensity = 1.0; r.toneMappingExposure = 1.08;
+  sc.traverse(o => { if (o.isMesh && o.material && 'envMapIntensity' in o.material) {
+    if (o.userData.env0 === undefined) o.userData.env0 = o.material.envMapIntensity;
+    o.material.envMapIntensity = o.userData.env0 * 0.18; } });
+  sc.fog = new THREE.Fog(NIGHT_BG, 30, 70);
+  sc.traverse(o => { if (o.isLineSegments){ if (o.userData.op0 === undefined) o.userData.op0 = o.material.opacity; o.material.opacity = o.userData.op0 * 0.4; } });
+}
+const shelfBtn = document.getElementById('shelf');
+function setShelf(on){
+  shelf.visible = on; floor.visible = !on; ledLight.intensity = on ? 1.7 : 0;
+  Object.assign(key.shadow.camera, on ? {left:-12,right:12,top:12,bottom:-12} : {left:-3,right:3,top:3,bottom:-3}); key.shadow.camera.updateProjectionMatrix();
+  START = on ? new THREE.Vector3(-3.6, 7.6, -25) : START0.clone(); TARGET = on ? new THREE.Vector3(0, 2.6, 2.2) : TARGET0.clone();
+  ctl.minAzimuthAngle = on ? Math.PI - 1.0 : -Infinity; ctl.maxAzimuthAngle = on ? -Math.PI + 1.0 : Infinity;
+  ctl.minPolarAngle = on ? Math.PI*0.2 : 0; ctl.maxPolarAngle = on ? Math.PI*0.47 : Math.PI*0.52;
+  ctl.maxDistance = on ? 32 : 16; ctl.minDistance = on ? 4 : 3;
+  key.intensity = on ? LIGHT[lightMode].key[0]*0.75 : LIGHT[lightMode].key[0];
+  camTw = {from: cam.position.clone(), t: 0}; tgTw = {from: ctl.target.clone(), t: 0};
+  shelfBtn.setAttribute('aria-pressed', on); shelfBtn.textContent = on ? 'Sem escrivaninha' : 'Na escrivaninha';
+  document.body.classList.toggle('noite', on);
+  if (on) applyNight(); else { hemi.color.setHex(0xffffff); hemi.groundColor.setHex(0x9a9c98); sc.traverse(o => { if (o.isLineSegments && o.userData.op0 !== undefined) o.material.opacity = o.userData.op0; }); sc.fog = null; moon.intensity = 0; lampGlow.intensity = 0; ledLight.intensity = 0; setLight(lightMode); }
+}
+shelfBtn.addEventListener('click', () => setShelf(!shelf.visible));
 // luz: estúdio (padrão) x dramática (lateral quente, contraluz frio, ambiente baixo, sombra funda)
 const envTex = sc.environment;
 const LIGHT = {
@@ -141,6 +231,7 @@ function setLight(m){
     if (o.userData.env0 === undefined) o.userData.env0 = o.material.envMapIntensity;
     o.material.envMapIntensity = o.userData.env0 * L.env; } });
   document.body.classList.toggle('drama', m === 'dramatica');
+  if (shelf.visible) applyNight();
   lightBtn.setAttribute('aria-pressed', m === 'dramatica'); lightBtn.textContent = m === 'dramatica' ? 'Luz de estúdio' : 'Luz dramática';
 }
 const lightBtn = document.getElementById('light');
@@ -153,6 +244,7 @@ function loop(now){
   if (playing){ const nv = value + dt*2.6; if (nv >= NSTEPS){ apply(NSTEPS); setPlay(false); } else apply(nv); }
   if (tw){ tw.t = Math.min(1, tw.t + dt*2.2); apply(tw.from + (tw.to - tw.from)*tw.t); if (tw.t >= 1) tw = null; }
   if (camTw){ camTw.t = Math.min(1, camTw.t + dt*1.8); const e = 1 - Math.pow(1 - camTw.t, 3); cam.position.lerpVectors(camTw.from, START, e); if (camTw.t >= 1) camTw = null; }
+  if (tgTw){ tgTw.t = Math.min(1, tgTw.t + dt*1.8); const e = 1 - Math.pow(1 - tgTw.t, 3); ctl.target.lerpVectors(tgTw.from, TARGET, e); if (tgTw.t >= 1) tgTw = null; }
   ctl.update(); r.render(sc, cam); requestAnimationFrame(loop);
 }
 
