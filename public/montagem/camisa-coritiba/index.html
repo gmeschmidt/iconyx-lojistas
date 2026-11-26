@@ -8,11 +8,11 @@
 <title>Montagem 3D Camisa Coritiba</title>
 <style>
   html,body{margin:0;height:100%;background:#a9aca8;transition:background .4s;font-family:system-ui,-apple-system,sans-serif;color:#1d1d1b;overflow:hidden}
-  #stage{position:fixed;inset:0 0 132px 0}
+  #stage{position:fixed;inset:0 0 var(--panel-h,132px) 0}
   #stage canvas{display:block;width:100%;height:100%;outline:none;touch-action:none;cursor:grab}
   #stage canvas:active{cursor:grabbing}
   #load{position:absolute;inset:0;display:grid;place-items:center;font-size:15px;color:#2b2d2a}
-  .panel{position:fixed;left:0;right:0;bottom:0;height:132px;box-sizing:border-box;padding:12px 16px 16px;background:transparent;display:flex;flex-direction:column;gap:10px;align-items:center}
+  .panel{position:fixed;left:0;right:0;bottom:0;box-sizing:border-box;padding:12px 16px calc(16px + env(safe-area-inset-bottom,0px));background:transparent;display:flex;flex-direction:column;gap:10px;align-items:center}
   .row{display:flex;align-items:center;gap:10px;width:100%;max-width:760px}
   .label{font-weight:600;font-size:15px;min-width:118px;font-variant-numeric:tabular-nums}
   input[type=range]{flex:1;min-width:0;height:44px;accent-color:#1c523c;cursor:pointer}
@@ -52,6 +52,11 @@
   </div>
 </div>
 
+<script>
+// o palco 3D termina onde começa o painel (no celular os botões quebram em mais de uma linha)
+(function(){ const pn = document.querySelector('.panel'); const fit = () => document.documentElement.style.setProperty('--panel-h', pn.offsetHeight + 'px');
+  new ResizeObserver(fit).observe(pn); fit(); })();
+</script>
 <script src="js/three.min.js"></script>
 <script src="js/OrbitControls.js"></script>
 <script src="js/GLTFLoader.js"></script>
@@ -148,19 +153,15 @@ const wood = new THREE.MeshPhysicalMaterial({map: woodTex(), roughness: 0.48, cl
 const mat = (c, r=0.6, extra={}) => new THREE.MeshPhysicalMaterial(Object.assign({color: c, roughness: r, envMapIntensity: 0.6}, extra));
 function box(w,h,d,x,y,z,m,cast=true){ const o = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), m); o.position.set(x,y,z); o.castShadow = cast; o.receiveShadow = true; shelf.add(o); return o; }
 // tampo de 140 x 70 cm, 3 cm de espessura; parede a 10 cm do fundo
-const DW = 140*CM, DD = 70*CM, DT = 3*CM, ZF = -7.5, ZB = ZF + DD;
-box(DW, DT, DD, 0, -DT/2, (ZF+ZB)/2, wood, false);
-box(400, 0.2, 400, 0, -75*CM, 0, mat(0x2a211a, 0.9, {envMapIntensity: 0.2}), false);
+// escrivaninha 3D (121 x 60 cm): área de trabalho a 75,8 cm do chão, com prateleira traseira 12,1 cm mais alta.
+// A área de trabalho fica em y = 0 na cena; a escrivaninha é girada para a frente dela ficar do lado da câmera.
+const DESK_Z = 2.5, ZF = DESK_Z - 30*CM, ZB = DESK_Z + 30*CM, DESK_H = 75.8*CM, SHELF_Y = 12.1*CM;
+box(400, 0.2, 400, 0, -DESK_H, mat(0x2a211a, 0.9, {envMapIntensity: 0.2}), false);
 box(400, 60, 0.2, 0, 20, ZB + 10*CM, mat(0x6e6355, 0.95, {envMapIntensity: 0.2}), false);
 // notebook fechado (32 x 22 cm)
-const lap = box(32*CM, 1.6*CM, 22*CM, -11.2, 0.8*CM, ZB - 19*CM, mat(0x8d9093, 0.35, {metalness: 0.6}));
-lap.rotation.y = 0.18;
 // caderno com caneta (21 x 28 cm)
-const nb = box(21*CM, 1.2*CM, 28*CM, -5.8, 0.6*CM, ZF + 15*CM, mat(0x0c1e15, 0.9, {envMapIntensity: 0.15})); nb.rotation.y = -0.22;
-const pen = new THREE.Mesh(new THREE.CylinderGeometry(0.45*CM, 0.45*CM, 14*CM, 20), mat(0x202020, 0.3, {clearcoat: 0.8}));
-pen.rotation.set(0, -0.6, Math.PI/2); pen.position.set(-5.3, 1.65*CM, ZF + 15*CM); pen.castShadow = true; shelf.add(pen);
 // caneca e luminária: modelos 3D (arquivos em metros; 1 m = 100*CM unidades)
-const LAMP_ROT = -0.6435, LAMP_BASE = new THREE.Vector3(7.5, 0, 5.0);
+const LAMP_ROT = -0.2507, LAMP_BASE = new THREE.Vector3(8.6, 0, 1.6);
 const MUG_POS = new THREE.Vector3(4.4, 0, -0.8);
 function addModel(url, setup){ new THREE.GLTFLoader().load(url, g => { const o = g.scene; o.scale.setScalar(100*CM); setup(o);
   o.traverse(m => { if (m.isMesh){ m.castShadow = !/luminaria/.test(url); m.receiveShadow = true;
@@ -169,6 +170,11 @@ function addModel(url, setup){ new THREE.GLTFLoader().load(url, g => { const o =
 addModel('assets/caneca.glb', o => { o.position.copy(MUG_POS); o.rotation.y = 2.2; });
 const coffee = new THREE.Mesh(new THREE.CircleGeometry(4.2*CM, 48), new THREE.MeshStandardMaterial({color: 0x2a160b, roughness: 0.15}));
 coffee.rotation.x = -Math.PI/2; coffee.position.set(MUG_POS.x, 9.6*CM, MUG_POS.z); shelf.add(coffee);
+addModel('assets/escrivaninha.glb', o => { o.position.set(0, -DESK_H, DESK_Z); o.rotation.y = Math.PI;
+  o.traverse(m => { if (m.isMesh){ m.material = wood; m.castShadow = false; } }); });
+// caderno A6 (o arquivo vem 10x maior) e celular deitado sobre a mesa
+addModel('assets/caderno.glb', o => { o.scale.setScalar(10*CM); o.position.set(-5.8, 0.035*10*CM, -1.2); o.rotation.y = 1.35; });
+addModel('assets/celular.glb', o => { o.rotation.set(-Math.PI/2, 0, 0.35); o.position.set(-8.4, 0.5*CM, 1.2); });
 addModel('assets/luminaria.glb', o => { o.position.copy(LAMP_BASE); o.rotation.y = LAMP_ROT; });
 // luminária de mesa (fonte de luz quente)
 const lampMat = mat(0x1d1d1b, 0.4, {metalness: 0.5});
@@ -206,10 +212,12 @@ const shelfBtn = document.getElementById('shelf');
 function setShelf(on){
   shelf.visible = on; floor.visible = !on; ledLight.intensity = on ? 1.7 : 0;
   Object.assign(key.shadow.camera, on ? {left:-12,right:12,top:12,bottom:-12} : {left:-3,right:3,top:3,bottom:-3}); key.shadow.camera.updateProjectionMatrix();
-  START = on ? new THREE.Vector3(-3.6, 7.6, -25) : START0.clone(); TARGET = on ? new THREE.Vector3(0, 2.6, 2.2) : TARGET0.clone();
+  START = on ? new THREE.Vector3(-3.6, 8.8, -27) : START0.clone(); TARGET = on ? new THREE.Vector3(0, 3.6, 2.0) : TARGET0.clone();
+  // tela em pé (celular): afasta a câmera para a escrivaninha caber na largura
+  if (on && cam.aspect < 1) START = START.clone().sub(TARGET).multiplyScalar(Math.min(2.2, 1.25/cam.aspect)).add(TARGET);
   ctl.minAzimuthAngle = on ? Math.PI - 1.0 : -Infinity; ctl.maxAzimuthAngle = on ? -Math.PI + 1.0 : Infinity;
   ctl.minPolarAngle = on ? Math.PI*0.2 : 0; ctl.maxPolarAngle = on ? Math.PI*0.47 : Math.PI*0.52;
-  ctl.maxDistance = on ? 32 : 16; ctl.minDistance = on ? 4 : 3;
+  ctl.maxDistance = on ? (cam.aspect < 1 ? 70 : 32) : 16; ctl.minDistance = on ? 4 : 3;
   key.intensity = on ? LIGHT[lightMode].key[0]*0.75 : LIGHT[lightMode].key[0];
   camTw = {from: cam.position.clone(), t: 0}; tgTw = {from: ctl.target.clone(), t: 0};
   shelfBtn.setAttribute('aria-pressed', on); shelfBtn.textContent = on ? 'Sem escrivaninha' : 'Na escrivaninha';
