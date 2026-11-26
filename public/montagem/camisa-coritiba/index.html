@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<base href="/montagem/camisa-coritiba/">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Montagem 3D Camisa Coritiba</title>
+<style>
+  html,body{margin:0;height:100%;background:#a9aca8;transition:background .4s;font-family:system-ui,-apple-system,sans-serif;color:#1d1d1b;overflow:hidden}
+  #stage{position:fixed;inset:0 0 132px 0}
+  #stage canvas{display:block;width:100%;height:100%;outline:none;touch-action:none;cursor:grab}
+  #stage canvas:active{cursor:grabbing}
+  #load{position:absolute;inset:0;display:grid;place-items:center;font-size:15px;color:#2b2d2a}
+  .panel{position:fixed;left:0;right:0;bottom:0;height:132px;box-sizing:border-box;padding:12px 16px 16px;background:transparent;display:flex;flex-direction:column;gap:10px;align-items:center}
+  .row{display:flex;align-items:center;gap:10px;width:100%;max-width:760px}
+  .label{font-weight:600;font-size:15px;min-width:118px;font-variant-numeric:tabular-nums}
+  input[type=range]{flex:1;min-width:0;height:44px;accent-color:#1c523c;cursor:pointer}
+  button{min-height:44px;min-width:44px;padding:0 16px;border-radius:22px;border:1px solid rgba(0,0,0,.12);background:#fff;color:#1d1d1b;font:600 15px system-ui,sans-serif;cursor:pointer}
+  button:hover{background:#f3f3f2}
+  button:focus-visible,input:focus-visible{outline:2px solid #1d1d1b;outline-offset:2px}
+  button.dark{background:#1d1d1b;color:#fff;border-color:#1d1d1b}
+  button.dark:hover{background:#333}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  @media(max-width:520px){.label{min-width:92px;font-size:14px}button{padding:0 12px;font-size:14px}}
+  body.verde{background:radial-gradient(120% 90% at 50% 30%,#1f6b47 0%,#0d3a26 55%,#04170e 100%);color:#eef4ef}
+  body.verde .label{color:#eef4ef}
+  body.drama{background:radial-gradient(90% 70% at 50% 38%,#8e918c 0%,#5b5e59 55%,#2c2e2b 100%);color:#f0f1ee}
+  body.drama .label{color:#f0f1ee}
+  body.drama.verde{background:radial-gradient(85% 65% at 50% 36%,#1a5c3c 0%,#0a2c1c 55%,#020a06 100%)}
+  body.verde #load{color:#cfe3d6}
+</style>
+</head>
+<body>
+<div id="stage"><div id="load">Carregando o modelo…</div></div>
+<div class="panel">
+  <div class="row">
+    <span class="label" id="lbl">Passo 0 de 41</span>
+    <input type="range" id="bar" min="0" max="41" step="0.01" value="0" aria-label="Progresso da montagem">
+  </div>
+  <div class="btns">
+    <button type="button" id="prev" aria-label="Passo anterior">◀</button>
+    <button type="button" id="play" class="dark">Montar</button>
+    <button type="button" id="next" aria-label="Próximo passo">▶</button>
+    <button type="button" id="reset">Voltar à posição original</button>
+    <button type="button" id="bg" aria-pressed="false">Fundo verde</button>
+    <button type="button" id="light" aria-pressed="false">Luz dramática</button>
+  </div>
+</div>
+
+<script src="js/three.min.js"></script>
+<script src="js/OrbitControls.js"></script>
+<script src="js/GLTFLoader.js"></script>
+<script src="js/RoomEnvironment.js"></script>
+<script>
+{
+const MODEL = 'assets/camisa-coritiba.glb';
+const stage = document.getElementById('stage');
+const r = new THREE.WebGLRenderer({antialias:true, alpha:true}); r.setClearColor(0x000000, 0);
+r.setPixelRatio(Math.min(devicePixelRatio,2));
+r.outputEncoding = THREE.sRGBEncoding; r.toneMapping = THREE.ACESFilmicToneMapping;
+r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
+stage.appendChild(r.domElement);
+const sc = new THREE.Scene();
+const hemi = new THREE.HemisphereLight(0xffffff,0x9a9c98,0.35); sc.add(hemi);
+const pmrem = new THREE.PMREMGenerator(r);
+sc.environment = pmrem.fromScene(new THREE.RoomEnvironment(), 0.04).texture;
+r.toneMappingExposure = 0.95; r.physicallyCorrectLights = false;
+const key = new THREE.DirectionalLight(0xfff6ea,1.35); key.position.set(-3,7,-5); key.castShadow = true;
+key.shadow.mapSize.set(2048,2048); Object.assign(key.shadow.camera,{left:-3,right:3,top:3,bottom:-3,near:1,far:20}); key.shadow.bias = -0.0004;
+sc.add(key);
+const rim = new THREE.DirectionalLight(0xdff2ff,0.9); rim.position.set(4,4.5,6); sc.add(rim);
+const kick = new THREE.SpotLight(0xffffff,0.6,30,0.5,0.6); kick.position.set(5,6,-6); kick.target.position.set(0,2,0); sc.add(kick); sc.add(kick.target);
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(40,40), new THREE.ShadowMaterial({opacity:0.22}));
+floor.rotation.x = -Math.PI/2; floor.receiveShadow = true; sc.add(floor);
+
+const cam = new THREE.PerspectiveCamera(30,1,0.1,100);
+const START = new THREE.Vector3(-5.2,3.6,-9.8), TARGET = new THREE.Vector3(0,2.0,0);
+cam.position.copy(START);
+const ctl = new THREE.OrbitControls(cam, r.domElement);
+ctl.target.copy(TARGET); ctl.enableDamping = true; ctl.dampingFactor = 0.08;
+ctl.minDistance = 3; ctl.maxDistance = 16; ctl.maxPolarAngle = Math.PI*0.52; ctl.enablePan = false;
+
+const resize = () => { const w = stage.clientWidth, h = stage.clientHeight; r.setSize(w,h,false); cam.aspect = w/h; cam.updateProjectionMatrix(); };
+new ResizeObserver(resize).observe(stage); resize();
+
+// montagem: cada etapa ocupa 1 unidade da barra; as peças da etapa entram em sequência dentro dela
+const easeOutBack = x => { const c1 = 1.3, c3 = c1+1; return 1 + c3*Math.pow(x-1,3) + c1*Math.pow(x-1,2); };
+let pieces = [], NSTEPS = 41, value = 0;
+// submontagens do manual: corpo (encaixa no passo 41), mangas (passo 30), recheio interno (passo 11)
+const clamp01 = x => Math.max(0, Math.min(1, x));
+const easeIO = x => x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x+2, 3)/2;
+function apply(v){
+  value = v;
+  const torso = (1 - easeIO(clamp01(v - 40))) * 0.9;
+  const sleeve = (1 - easeIO(clamp01(v - 29))) * 0.8;
+  const inner = (1 - easeIO(clamp01(v - 10))) * 1.1;
+  for (const n of pieces){
+    const k = (v - n.userData.t0) / n.userData.dur;
+    if (k <= 0){ n.visible = false; continue; }
+    n.visible = true;
+    const e = k >= 1 ? 1 : easeOutBack(k);
+    const a = n.userData.asm;
+    n.position.set(
+      a === 2 ? -sleeve : a === 3 ? sleeve : 0,
+      (1-e) * 0.6 + (a >= 1 ? torso : 0),
+      a === 4 ? -inner : 0);
+  }
+  const step = Math.min(NSTEPS, Math.ceil(v - 1e-6));
+  lbl.textContent = 'Passo ' + Math.max(0,step) + ' de ' + NSTEPS;
+  bar.value = v;
+}
+
+const bar = document.getElementById('bar'), lbl = document.getElementById('lbl'), play = document.getElementById('play');
+let playing = false, last = 0;
+const setPlay = on => { playing = on; play.textContent = on ? 'Pausar' : (value >= NSTEPS ? 'Montar de novo' : 'Montar'); };
+bar.addEventListener('input', () => { setPlay(false); apply(+bar.value); });
+play.addEventListener('click', () => { if (!playing && value >= NSTEPS) apply(0); setPlay(!playing); });
+const go = d => { setPlay(false); const target = d > 0 ? Math.floor(value + 1e-6) + 1 : Math.ceil(value - 1e-6) - 1; tween(Math.max(0, Math.min(NSTEPS, target))); };
+let tw = null;
+function tween(to){ tw = {from:value, to, t:0}; }
+document.getElementById('next').addEventListener('click', () => go(1));
+document.getElementById('prev').addEventListener('click', () => go(-1));
+document.getElementById('reset').addEventListener('click', () => { camTw = {from:cam.position.clone(), t:0}; ctl.target.copy(TARGET); });
+addEventListener('keydown', e => { if (e.target === bar) return; if (e.key === 'ArrowRight') go(1); if (e.key === 'ArrowLeft') go(-1); if (e.key === ' ') { e.preventDefault(); play.click(); } });
+let camTw = null;
+// luz: estúdio (padrão) x dramática (lateral quente, contraluz frio, ambiente baixo, sombra funda)
+const envTex = sc.environment;
+const LIGHT = {
+  estudio:  {hemi:0.35, env:1, key:[1.35,0xfff6ea,-3,7,-5], rim:[0.9,0xdff2ff,4,4.5,6], kick:0.6, shadow:0.22, exp:0.95},
+  dramatica:{hemi:0.06, env:0.35, key:[2.6,0xffe2bd,-6,4.2,-2.5], rim:[2.2,0xbfe6ff,5,6,6.5], kick:1.6, shadow:0.55, exp:1.05}
+};
+let lightMode = 'estudio';
+function setLight(m){
+  const L = LIGHT[m]; lightMode = m;
+  hemi.intensity = L.hemi; r.toneMappingExposure = L.exp;
+  key.intensity = L.key[0]; key.color.setHex(L.key[1]); key.position.set(L.key[2],L.key[3],L.key[4]);
+  rim.intensity = L.rim[0]; rim.color.setHex(L.rim[1]); rim.position.set(L.rim[2],L.rim[3],L.rim[4]);
+  kick.intensity = L.kick; floor.material.opacity = document.body.classList.contains('verde') ? Math.max(L.shadow,0.35) : L.shadow;
+  sc.traverse(o => { if (o.isMesh && o.material && 'envMapIntensity' in o.material) {
+    if (o.userData.env0 === undefined) o.userData.env0 = o.material.envMapIntensity;
+    o.material.envMapIntensity = o.userData.env0 * L.env; } });
+  document.body.classList.toggle('drama', m === 'dramatica');
+  lightBtn.setAttribute('aria-pressed', m === 'dramatica'); lightBtn.textContent = m === 'dramatica' ? 'Luz de estúdio' : 'Luz dramática';
+}
+const lightBtn = document.getElementById('light');
+lightBtn.addEventListener('click', () => setLight(lightMode === 'estudio' ? 'dramatica' : 'estudio'));
+const bgBtn = document.getElementById('bg');
+bgBtn.addEventListener('click', () => { const on = document.body.classList.toggle('verde'); bgBtn.setAttribute('aria-pressed', on); bgBtn.textContent = on ? 'Fundo cinza' : 'Fundo verde'; floor.material.opacity = on ? 0.35 : 0.22; });
+
+function loop(now){
+  const dt = Math.min(0.05, (now - last)/1000 || 0); last = now;
+  if (playing){ const nv = value + dt*2.6; if (nv >= NSTEPS){ apply(NSTEPS); setPlay(false); } else apply(nv); }
+  if (tw){ tw.t = Math.min(1, tw.t + dt*2.2); apply(tw.from + (tw.to - tw.from)*tw.t); if (tw.t >= 1) tw = null; }
+  if (camTw){ camTw.t = Math.min(1, camTw.t + dt*1.8); const e = 1 - Math.pow(1 - camTw.t, 3); cam.position.lerpVectors(camTw.from, START, e); if (camTw.t >= 1) camTw = null; }
+  ctl.update(); r.render(sc, cam); requestAnimationFrame(loop);
+}
+
+new THREE.GLTFLoader().load(MODEL, gl => {
+  const root = gl.scene;
+  // frisos: contorno de cada peça, como no traço do manual; faces internas sempre visíveis
+  const EDGE = {cwhite:0xa9aca7, c288:0x0a2a1c, c72:0x34362f, c15:0xa9aca7};
+  const meshes = []; root.traverse(o => { if (o.isMesh) meshes.push(o); });
+  meshes.forEach(o => {
+    o.castShadow = true; o.receiveShadow = true; o.material.side = THREE.DoubleSide;
+    // plástico injetado: base acetinada com verniz fino por cima (reflexo nítido nas bordas)
+    const gray = o.material.name === 'c72';
+    o.material = new THREE.MeshPhysicalMaterial({color: o.material.color, side: THREE.DoubleSide,
+      roughness: gray ? 0.5 : 0.42, metalness: 0, clearcoat: gray ? 0.25 : 0.55, clearcoatRoughness: 0.14,
+      reflectivity: 0.45, envMapIntensity: 0.7, name: o.material.name});
+    const col = EDGE[o.material.name] !== undefined ? EDGE[o.material.name] : 0x666666;
+    const lines = new THREE.LineSegments(new THREE.EdgesGeometry(o.geometry, 30),
+      new THREE.LineBasicMaterial({color: col, transparent: true, opacity: 0.5}));
+    o.add(lines);
+  });
+  const parse = n => { const m = n.name.match(/^g(\d+)_s(\d+)_a(\d+)/); return [+m[1], +m[2], +m[3]]; };
+  pieces = root.children.slice().sort((a,b) => parse(a)[0] - parse(b)[0]);
+  const bySteps = {};
+  pieces.forEach(n => { const [, s, a] = parse(n); n.userData.asm = a; (bySteps[s] = bySteps[s] || []).push(n); });
+  Object.keys(bySteps).forEach(k => {
+    const s = +k, list = bySteps[k], n = list.length, span = 0.55;
+    list.forEach((p, j) => { p.userData.t0 = (s - 1) + (n > 1 ? span * j/(n-1) : 0); p.userData.dur = 0.45; });
+  });
+  const tex = new THREE.TextureLoader().load('assets/escudo.png'); tex.encoding = THREE.sRGBEncoding; tex.anisotropy = 8;
+  const decal = new THREE.Mesh(new THREE.PlaneGeometry(0.80,0.72),
+    new THREE.MeshPhysicalMaterial({map:tex, transparent:true, roughness:0.42, clearcoat:0.55, clearcoatRoughness:0.14, envMapIntensity:0.7, metalness:0, polygonOffset:true, polygonOffsetFactor:-2}));
+  decal.rotation.y = Math.PI; decal.position.set(-0.10, 2.52, -0.0986);
+  const host = pieces.find(n => n.name.endsWith('_decal')); if (host) host.add(decal);
+  // arte da plaquinha do QR, aplicada na face de cima do tile inclinado
+  const qtex = new THREE.TextureLoader().load('assets/plaquinha.png'); qtex.encoding = THREE.sRGBEncoding; qtex.anisotropy = 8;
+  const qr = new THREE.Mesh(new THREE.PlaneGeometry(1.20, 0.40),
+    new THREE.MeshPhysicalMaterial({map:qtex, toneMapped:false, roughness:0.5, clearcoat:0.3, clearcoatRoughness:0.2, envMapIntensity:0.3, polygonOffset:true, polygonOffsetFactor:-2}));
+  const N = new THREE.Vector3(0,0.9659,-0.2589), Vv = new THREE.Vector3(0,0.2589,0.9659), U = new THREE.Vector3(-1,0,0);
+  qr.matrixAutoUpdate = false;
+  qr.matrix.makeBasis(U, Vv, N).setPosition(new THREE.Vector3(0, 0.15897, -0.71566).addScaledVector(N, 0.0015));
+  const qhost = pieces.find(n => n.name.includes('_qr')); if (qhost) qhost.add(qr);
+  sc.add(root);
+  document.getElementById('load').remove();
+  apply(0); setPlay(true); requestAnimationFrame(loop);
+}, undefined, () => { document.getElementById('load').textContent = 'Não foi possível carregar o modelo.'; });
+}
+</script>
+</body>
+</html>
