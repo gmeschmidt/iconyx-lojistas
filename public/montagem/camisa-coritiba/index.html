@@ -159,14 +159,17 @@ lap.rotation.y = 0.18;
 const nb = box(21*CM, 1.2*CM, 28*CM, -5.8, 0.6*CM, ZF + 15*CM, mat(0x0c1e15, 0.9, {envMapIntensity: 0.15})); nb.rotation.y = -0.22;
 const pen = new THREE.Mesh(new THREE.CylinderGeometry(0.45*CM, 0.45*CM, 14*CM, 20), mat(0x202020, 0.3, {clearcoat: 0.8}));
 pen.rotation.set(0, -0.6, Math.PI/2); pen.position.set(-5.3, 1.65*CM, ZF + 15*CM); pen.castShadow = true; shelf.add(pen);
-// caneca (9,5 cm)
-const mugMat = new THREE.MeshPhysicalMaterial({color: 0xf1ece3, roughness: 0.3, clearcoat: 0.6, side: THREE.DoubleSide});
-const MX = 4.4, MZ = ZF + 26*CM;
-const mug = new THREE.Mesh(new THREE.CylinderGeometry(4*CM, 3.8*CM, 9.5*CM, 48, 1, true), mugMat); mug.position.set(MX, 4.75*CM, MZ); mug.castShadow = true; shelf.add(mug);
-const mb = new THREE.Mesh(new THREE.CircleGeometry(3.8*CM, 48), mugMat); mb.rotation.x = -Math.PI/2; mb.position.set(MX, 0.02, MZ); shelf.add(mb);
-const coffee = new THREE.Mesh(new THREE.CircleGeometry(3.85*CM, 48), new THREE.MeshStandardMaterial({color: 0x2a160b, roughness: 0.15})); coffee.rotation.x = -Math.PI/2; coffee.position.set(MX, 8.2*CM, MZ); shelf.add(coffee);
-const handle = new THREE.Mesh(new THREE.TorusGeometry(2.6*CM, 0.7*CM, 16, 40, Math.PI*1.3), mugMat);
-handle.position.set(MX + 4.2*CM, 4.75*CM, MZ); handle.rotation.z = -Math.PI*0.65; handle.castShadow = true; shelf.add(handle);
+// caneca e luminária: modelos 3D (arquivos em metros; 1 m = 100*CM unidades)
+const LAMP_ROT = -0.6435, LAMP_BASE = new THREE.Vector3(7.5, 0, 5.0);
+const MUG_POS = new THREE.Vector3(4.4, 0, -0.8);
+function addModel(url, setup){ new THREE.GLTFLoader().load(url, g => { const o = g.scene; o.scale.setScalar(100*CM); setup(o);
+  o.traverse(m => { if (m.isMesh){ m.castShadow = !/luminaria/.test(url); m.receiveShadow = true;
+    if (m.material && 'envMapIntensity' in m.material){ m.userData.env0 = 0.6; m.material.envMapIntensity = shelf.visible ? 0.6*0.18 : 0.6; } } });
+  shelf.add(o); }); }
+addModel('assets/caneca.glb', o => { o.position.copy(MUG_POS); o.rotation.y = 2.2; });
+const coffee = new THREE.Mesh(new THREE.CircleGeometry(4.2*CM, 48), new THREE.MeshStandardMaterial({color: 0x2a160b, roughness: 0.15}));
+coffee.rotation.x = -Math.PI/2; coffee.position.set(MUG_POS.x, 9.6*CM, MUG_POS.z); shelf.add(coffee);
+addModel('assets/luminaria.glb', o => { o.position.copy(LAMP_BASE); o.rotation.y = LAMP_ROT; });
 // luminária de mesa (fonte de luz quente)
 const lampMat = mat(0x1d1d1b, 0.4, {metalness: 0.5});
 // caixa do produto em pé, ao lado da camisa (25 x 17,5 x 5 cm; o arquivo vem em metros)
@@ -178,17 +181,8 @@ new THREE.GLTFLoader().load(BOX_URL, g => {
     if (o.material && 'envMapIntensity' in o.material){ o.userData.env0 = 0.6; o.material.envMapIntensity = shelf.visible ? 0.6*0.18 : 0.6; } } });
   shelf.add(bx);
 });
-// luminária articulada: base atrás e à direita, cúpula sobre a frente da camisa
-const LB = new THREE.Vector3(8.4, 0, 2.4), LH = new THREE.Vector3(3.2, 8.4, -2.4);
-const lbase = new THREE.Mesh(new THREE.CylinderGeometry(7*CM, 7.5*CM, 1.5*CM, 40), lampMat); lbase.position.set(LB.x, 0.75*CM, LB.z); lbase.castShadow = true; shelf.add(lbase);
-const elbow = new THREE.Vector3(LB.x + 0.8, 7.0, LB.z + 0.9);
-function rod(p1, p2){ const d = p2.clone().sub(p1); const m = new THREE.Mesh(new THREE.CylinderGeometry(0.55*CM, 0.55*CM, d.length(), 16), lampMat);
-  m.position.copy(p1).addScaledVector(d, 0.5); m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), d.clone().normalize()); m.castShadow = true; shelf.add(m); }
-rod(new THREE.Vector3(LB.x, 0.3, LB.z), elbow); rod(elbow, LH.clone().add(new THREE.Vector3(0, 1.0, 0)));
-const joint = new THREE.Mesh(new THREE.SphereGeometry(1.1*CM, 16, 12), lampMat); joint.position.copy(elbow); shelf.add(joint);
-const shade = new THREE.Mesh(new THREE.ConeGeometry(6.5*CM, 11*CM, 40, 1, true), new THREE.MeshStandardMaterial({color: 0x1d1d1b, roughness: 0.4, metalness: 0.5, side: THREE.DoubleSide}));
-shade.position.copy(LH).add(new THREE.Vector3(0, 0.6, 0)); shade.lookAt(0, 1.8, 0); shade.rotateX(-Math.PI/2); shade.castShadow = false; shelf.add(shade);
-const bulb = new THREE.Mesh(new THREE.SphereGeometry(1.8*CM, 20, 16), new THREE.MeshBasicMaterial({color: 0xfff1d6})); bulb.position.copy(LH); shelf.add(bulb);
+// posição da lâmpada do modelo (centro da cúpula), já girada e na escala da cena
+const bulb = {position: new THREE.Vector3(-0.156, 0.4245, 0).multiplyScalar(100*CM).applyAxisAngle(new THREE.Vector3(0,1,0), LAMP_ROT).add(LAMP_BASE)};
 const ledLight = new THREE.SpotLight(0xffc98a, 0, 26, 0.62, 0.9, 1.4); ledLight.position.copy(bulb.position);
 ledLight.target.position.set(0, 1.6, -0.6); ledLight.castShadow = true; ledLight.shadow.mapSize.set(2048,2048); ledLight.shadow.bias = -0.0005;
 shelf.add(ledLight); shelf.add(ledLight.target);
