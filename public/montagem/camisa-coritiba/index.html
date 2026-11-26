@@ -153,12 +153,12 @@ box(DW, DT, DD, 0, -DT/2, (ZF+ZB)/2, wood, false);
 box(400, 0.2, 400, 0, -75*CM, 0, mat(0x2a211a, 0.9, {envMapIntensity: 0.2}), false);
 box(400, 60, 0.2, 0, 20, ZB + 10*CM, mat(0x6e6355, 0.95, {envMapIntensity: 0.2}), false);
 // notebook fechado (32 x 22 cm)
-const lap = box(32*CM, 1.6*CM, 22*CM, -8.0, 0.8*CM, ZB - 22*CM, mat(0x8d9093, 0.35, {metalness: 0.6}));
+const lap = box(32*CM, 1.6*CM, 22*CM, -11.2, 0.8*CM, ZB - 19*CM, mat(0x8d9093, 0.35, {metalness: 0.6}));
 lap.rotation.y = 0.18;
 // caderno com caneta (21 x 28 cm)
-const nb = box(21*CM, 1.2*CM, 28*CM, -5.2, 0.6*CM, ZF + 22*CM, mat(0x0c1e15, 0.9, {envMapIntensity: 0.15})); nb.rotation.y = -0.22;
+const nb = box(21*CM, 1.2*CM, 28*CM, -5.8, 0.6*CM, ZF + 15*CM, mat(0x0c1e15, 0.9, {envMapIntensity: 0.15})); nb.rotation.y = -0.22;
 const pen = new THREE.Mesh(new THREE.CylinderGeometry(0.45*CM, 0.45*CM, 14*CM, 20), mat(0x202020, 0.3, {clearcoat: 0.8}));
-pen.rotation.set(0, -0.6, Math.PI/2); pen.position.set(-4.7, 1.65*CM, ZF + 22*CM); pen.castShadow = true; shelf.add(pen);
+pen.rotation.set(0, -0.6, Math.PI/2); pen.position.set(-5.3, 1.65*CM, ZF + 15*CM); pen.castShadow = true; shelf.add(pen);
 // caneca (9,5 cm)
 const mugMat = new THREE.MeshPhysicalMaterial({color: 0xf1ece3, roughness: 0.3, clearcoat: 0.6, side: THREE.DoubleSide});
 const MX = 4.4, MZ = ZF + 26*CM;
@@ -169,6 +169,15 @@ const handle = new THREE.Mesh(new THREE.TorusGeometry(2.6*CM, 0.7*CM, 16, 40, Ma
 handle.position.set(MX + 4.2*CM, 4.75*CM, MZ); handle.rotation.z = -Math.PI*0.65; handle.castShadow = true; shelf.add(handle);
 // luminária de mesa (fonte de luz quente)
 const lampMat = mat(0x1d1d1b, 0.4, {metalness: 0.5});
+// caixa do produto em pé, ao lado da camisa (25 x 17,5 x 5 cm; o arquivo vem em metros)
+const BOX_URL = 'assets/caixa-camisa.glb';
+new THREE.GLTFLoader().load(BOX_URL, g => {
+  const bx = g.scene; bx.scale.setScalar(100*CM);
+  bx.position.set(-4.7, 0, 2.6); bx.rotation.y = Math.PI + 0.28;
+  bx.traverse(o => { if (o.isMesh){ o.castShadow = true; o.receiveShadow = true;
+    if (o.material && 'envMapIntensity' in o.material){ o.userData.env0 = 0.6; o.material.envMapIntensity = shelf.visible ? 0.6*0.18 : 0.6; } } });
+  shelf.add(bx);
+});
 // luminária articulada: base atrás e à direita, cúpula sobre a frente da camisa
 const LB = new THREE.Vector3(8.4, 0, 2.4), LH = new THREE.Vector3(3.2, 8.4, -2.4);
 const lbase = new THREE.Mesh(new THREE.CylinderGeometry(7*CM, 7.5*CM, 1.5*CM, 40), lampMat); lbase.position.set(LB.x, 0.75*CM, LB.z); lbase.castShadow = true; shelf.add(lbase);
