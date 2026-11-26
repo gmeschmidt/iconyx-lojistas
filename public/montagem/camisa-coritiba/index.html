@@ -167,19 +167,36 @@ wall.position.set(0, 4, ZB + 10*CM); wall.rotation.y = Math.PI; shelf.add(wall);
 // caneca e luminária: modelos 3D (arquivos em metros; 1 m = 100*CM unidades)
 const LAMP_ROT = -0.2507, LAMP_BASE = new THREE.Vector3(8.6, 0, 1.6);
 const MUG_POS = new THREE.Vector3(4.4, 0, -0.8);
+// materiais com as texturas PBR (mapas UV dos próprios modelos; glTF usa flipY = false)
+const TXL = new THREE.TextureLoader();
+function pbr(name, opts = {}){
+  const t = (m, srgb) => { const x = TXL.load('assets/texturas/' + name + '-' + m + '.jpg'); x.flipY = true; x.anisotropy = 8; if (srgb) x.encoding = THREE.sRGBEncoding; return x; };
+  const mtl = new THREE.MeshStandardMaterial({map: t('col', true), normalMap: t('nrm'), roughnessMap: t('roughness'), aoMap: t('ao'), aoMapIntensity: 0.9,
+    roughness: 1, metalness: 0, envMapIntensity: 0.6});
+  if (opts.metal){ mtl.metalnessMap = t('metalness'); mtl.metalness = 1; }
+  // acabamento fosco: ignora o mapa de rugosidade (brilhante demais) e usa um valor fixo, com menos reflexo do ambiente
+  if (opts.matte){ mtl.roughnessMap = null; mtl.roughness = opts.matte; mtl.envMapIntensity = 0.35; }
+  return mtl;
+}
+function applyPbr(o, mtl, filter){ o.traverse(m => { if (m.isMesh && m.geometry.attributes.uv && (!filter || filter(m))){
+  if (!m.geometry.attributes.uv2) m.geometry.setAttribute('uv2', m.geometry.attributes.uv); m.material = mtl; } }); }
+const deskMat = pbr('desk', {matte: 0.8}), notebookMat = pbr('notebook');
+const LAMP_URL = 'assets/luminaria.glb';
 function addModel(url, setup){ new THREE.GLTFLoader().load(url, g => { const o = g.scene; o.scale.setScalar(100*CM); setup(o);
-  o.traverse(m => { if (m.isMesh){ m.castShadow = !/luminaria/.test(url); m.receiveShadow = true;
+  o.traverse(m => { if (m.isMesh){ m.castShadow = url !== LAMP_URL; m.receiveShadow = true;
     if (m.material && 'envMapIntensity' in m.material){ m.userData.env0 = 0.6; m.material.envMapIntensity = shelf.visible ? 0.6*0.42 : 0.6; } } });
   shelf.add(o); }); }
-addModel('assets/caneca.glb', o => { o.position.copy(MUG_POS); o.rotation.y = 2.2; });
+addModel('assets/caneca.glb', o => { o.traverse(m => { if (m.isMesh) m.material = new THREE.MeshPhysicalMaterial({color: 0xe9eaec, roughness: 0.07, metalness: 0, clearcoat: 0.6, clearcoatRoughness: 0.05, envMapIntensity: 0.6}); }); o.position.copy(MUG_POS); o.rotation.y = 2.2; });
 const coffee = new THREE.Mesh(new THREE.CircleGeometry(4.2*CM, 48), new THREE.MeshStandardMaterial({color: 0x2a160b, roughness: 0.15}));
 coffee.rotation.x = -Math.PI/2; coffee.position.set(MUG_POS.x, 9.6*CM, MUG_POS.z); shelf.add(coffee);
 addModel('assets/escrivaninha.glb', o => { o.position.set(0, -DESK_H, DESK_Z); o.rotation.y = Math.PI;
-  o.traverse(m => { if (m.isMesh){ m.material = wood; m.castShadow = false; } }); });
+  applyPbr(o, deskMat); o.traverse(m => { if (m.isMesh) m.castShadow = false; }); });
 // caderno A6 (o arquivo vem 10x maior) e celular deitado sobre a mesa
-addModel('assets/caderno.glb', o => { o.scale.setScalar(10*CM); o.position.set(-5.8, 0.035*10*CM, -1.2); o.rotation.y = 1.35; });
-addModel('assets/celular.glb', o => { o.rotation.set(-Math.PI/2, 0, 0.35); o.position.set(-8.4, 0.5*CM, 1.2); });
-addModel('assets/luminaria.glb', o => { o.position.copy(LAMP_BASE); o.rotation.y = LAMP_ROT; });
+addModel('assets/caderno.glb', o => { applyPbr(o, notebookMat); o.scale.setScalar(10*CM); o.position.set(-5.8, 0.035*10*CM, -1.2); o.rotation.y = 1.35; });
+// celular (14,7 cm, texturas embutidas no modelo): deitado com a tela para cima
+addModel('assets/celular.glb', o => { o.rotation.set(Math.PI/2, 0, 0.35); o.position.set(-8.4, 0.8*CM, 1.2); });
+addModel(LAMP_URL, o => { o.traverse(m => { if (m.isMesh && m.material && m.material.name === 'metal')
+    m.material = new THREE.MeshStandardMaterial({color: 0x1b1b1b, roughness: 0.41, metalness: 0.04, envMapIntensity: 0.6, side: m.material.side}); }); o.position.copy(LAMP_BASE); o.rotation.y = LAMP_ROT; });
 // luminária de mesa (fonte de luz quente)
 const lampMat = mat(0x1d1d1b, 0.4, {metalness: 0.5});
 // caixa do produto em pé, ao lado da camisa (25 x 17,5 x 5 cm; o arquivo vem em metros)
@@ -192,7 +209,7 @@ new THREE.GLTFLoader().load(BOX_URL, g => {
   shelf.add(bx);
 });
 // posição da lâmpada do modelo (centro da cúpula), já girada e na escala da cena
-const bulb = {position: new THREE.Vector3(-0.156, 0.4245, 0).multiplyScalar(100*CM).applyAxisAngle(new THREE.Vector3(0,1,0), LAMP_ROT).add(LAMP_BASE)};
+const bulb = {position: new THREE.Vector3(-0.1667, 0.344, 0).multiplyScalar(100*CM).applyAxisAngle(new THREE.Vector3(0,1,0), LAMP_ROT).add(LAMP_BASE)};
 const ledLight = new THREE.SpotLight(0xffd3a0, 0, 30, 0.85, 1, 1.2); ledLight.position.copy(bulb.position);
 ledLight.target.position.set(0, 1.6, -0.6); ledLight.castShadow = true; ledLight.shadow.mapSize.set(2048,2048); ledLight.shadow.bias = -0.0005;
 shelf.add(ledLight); shelf.add(ledLight.target);

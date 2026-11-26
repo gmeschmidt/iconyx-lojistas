@@ -1,0 +1,29 @@
+Visualizador 3D de montagem | Camisa Coritiba (ICFUT0021) | Iconyx
+
+COMO PUBLICAR
+1. Suba a pasta inteira (montagem-camisa-coritiba) para o servidor do site,
+   mantendo a estrutura: index.html, pasta js/ e pasta assets/.
+2. Acesse pelo endereço da pasta, por exemplo:
+   https://www.SEU-DOMINIO.com.br/montagem-camisa-coritiba/
+3. Para colocar dentro de outra página (página de produto, landing), use um iframe:
+   <iframe src="/montagem-camisa-coritiba/" style="width:100%;height:720px;border:0" title="Montagem 3D da camisa do Coritiba"></iframe>
+
+IMPORTANTE
+- Precisa estar hospedado num servidor (http/https). Abrindo o index.html direto
+  do computador, com duplo clique, o navegador bloqueia o carregamento do modelo 3D.
+  Para testar localmente: na pasta, rode "python3 -m http.server" e abra http://localhost:8000
+- Não depende de nenhum serviço externo: a biblioteca 3D (three.js r128) já está na pasta js/.
+- O modelo tem 8,3 MB. Se o servidor tiver compressão gzip/brotli ativada para .glb,
+  o carregamento fica bem mais rápido.
+
+O QUE O VISUALIZADOR FAZ
+- Barra com os 41 passos do manual (arrastar monta e desmonta)
+- Botões de passo anterior/próximo, montagem automática e voltar à posição original
+- Girar e aproximar com mouse ou dedos; setas e barra de espaço no teclado
+- Alternar fundo cinza/verde e luz de estúdio/dramática
+
+ARQUIVOS
+- assets/camisa-coritiba.glb: modelo com as 186 peças, marcadas por passo
+- assets/escudo.png: arte do escudo da placa do peito
+- assets/plaquinha.png: arte da plaquinha do QR (versão de captura de tela;
+  troque por uma versão em alta resolução, mesmo nome e proporção 3:1, para o QR ficar legível)
